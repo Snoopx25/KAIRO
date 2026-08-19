@@ -686,8 +686,17 @@
 Importe os dias registrados (entrada/saída, folgas), a pensão (Nenkin) preenchida e os gastos do seu antigo app Jikan. Nada é sobrescrito sem confirmação, e um backup dos seus dados atuais do Kairo é baixado automaticamente antes de qualquer alteração.
 </p>
 
+<div class="flex flex-col gap-3 p-4 rounded-lg bg-primary/5 border border-primary/20">
+<p class="text-sm font-semibold text-primary" id="mig-auto-title" data-i18n="migAutoTitle">✨ Detecção automática</p>
+<p class="text-xs text-on-surface-variant" id="mig-auto-body" data-i18n="migAutoBody">Se o Jikan e o Kairo estiverem no mesmo domínio (ex: ambos em seuusuario.github.io), o Kairo consegue ler os dados direto, sem precisar exportar nada.</p>
+<button class="py-2 px-4 rounded-lg bg-primary hover:bg-primary-container text-on-primary font-bold text-sm transition-colors flex items-center gap-2 self-start" id="mig-autodetect-btn" type="button">
+<span class="material-symbols-outlined text-lg">auto_fix_high</span> <span id="mig-autodetect-lbl" data-i18n="migAutodetectLbl">Detectar automaticamente</span>
+</button>
+</div>
+
 <div class="flex flex-col gap-3 p-4 rounded-lg bg-surface-container/60 border border-outline-variant/20">
 <p class="text-sm font-semibold text-on-surface" id="mig-step1-title" data-i18n="migStep1Title">Passo 1 — Exportar do Jikan</p>
+<p class="text-xs text-on-surface-variant" id="mig-manual-note" data-i18n="migManualNote">Se a detecção automática não achar nada (domínios diferentes), use o método manual abaixo:</p>
 <p class="text-xs text-on-surface-variant" id="mig-step1-body" data-i18n-html="migStep1Body">
 Abra o Jikan no navegador → pressione <b>F12</b> (DevTools) → aba <b>Console</b> → cole o script de exportação que te enviei e aperte Enter. Isso baixa um arquivo <code>jikan_export.json</code>.
 </p>
@@ -1400,6 +1409,7 @@ Um arquivo <code>kairo_backup_antes_migracao.json</code> será baixado automatic
             repInsightEmpty: "Not enough data yet — keep tracking to see insights here.",
             migTitle: "Migrate data from Jikan",
             migSubtitle: "Import the recorded days (clock in/out, days off), the filled-in pension (Nenkin) and the expenses from your old Jikan app. Nothing is overwritten without confirmation, and a backup of your current Kairo data is downloaded automatically before any change.",
+            migAutoTitle: "✨ Automatic detection", migAutoBody: "If Jikan and Kairo are on the same domain (e.g. both under yourname.github.io), Kairo can read the data directly, no export needed.", migAutodetectLbl: "Detect automatically", migManualNote: "If automatic detection finds nothing (different domains), use the manual method below:", migAutoNotFound: "No Jikan data found in this browser/domain. Use the manual method below.", migAutoFound: "✨ Jikan data found automatically! Check the summary below.",
             migStep1Title: "Step 1 — Export from Jikan",
             migStep1Body: "Open Jikan in your browser → press <b>F12</b> (DevTools) → <b>Console</b> tab → paste the export script I sent you and press Enter. This downloads a <code>jikan_export.json</code> file.",
             migStep2Title: "Step 2 — Select the exported file",
@@ -1469,6 +1479,7 @@ Um arquivo <code>kairo_backup_antes_migracao.json</code> será baixado automatic
             repInsightEmpty: "Ainda não há dados suficientes — continue registrando para ver insights aqui.",
             migTitle: "Migrar dados do Jikan",
             migSubtitle: "Importe os dias registrados (entrada/saída, folgas), a pensão (Nenkin) preenchida e os gastos do seu antigo app Jikan. Nada é sobrescrito sem confirmação, e um backup dos seus dados atuais do Kairo é baixado automaticamente antes de qualquer alteração.",
+            migAutoTitle: "✨ Detecção automática", migAutoBody: "Se o Jikan e o Kairo estiverem no mesmo domínio (ex: ambos em seuusuario.github.io), o Kairo consegue ler os dados direto, sem precisar exportar nada.", migAutodetectLbl: "Detectar automaticamente", migManualNote: "Se a detecção automática não achar nada (domínios diferentes), use o método manual abaixo:", migAutoNotFound: "Nenhum dado do Jikan encontrado neste navegador/domínio. Use o método manual abaixo.", migAutoFound: "✨ Dados do Jikan encontrados automaticamente! Confira o resumo abaixo.",
             migStep1Title: "Passo 1 — Exportar do Jikan",
             migStep1Body: "Abra o Jikan no navegador → pressione <b>F12</b> (DevTools) → aba <b>Console</b> → cole o script de exportação que te enviei e aperte Enter. Isso baixa um arquivo <code>jikan_export.json</code>.",
             migStep2Title: "Passo 2 — Selecionar o arquivo exportado",
@@ -1501,6 +1512,7 @@ Um arquivo <code>kairo_backup_antes_migracao.json</code> será baixado automatic
             nkTypeNone: "なし", nkTypeRetirement: "退職年金", nkTypeDisability: "障害年金", nkTypeSurvivors: "遺族年金", nkTypeOthers: "その他", nkPlaceholderMonth: "月", nkPlaceholderDay: "日", nkPlaceholderValue: "金額", nkManualPh: "¥ 正確な金額", repWorked: "出勤",
             migTitle: "Jikanからデータを移行",
             migSubtitle: "旧アプリJikanの記録された日(出退勤、休み)、入力済みの年金(Nenkin)、支出をインポートします。確認なしで上書きされることはなく、変更前にKairoの現在のデータのバックアップが自動的にダウンロードされます。",
+            migAutoTitle: "✨ 自動検出", migAutoBody: "JikanとKairoが同じドメイン上にある場合(例: どちらもyourname.github.io配下)、Kairoはエクスポートなしで直接データを読み取れます。", migAutodetectLbl: "自動検出", migManualNote: "自動検出で何も見つからない場合(ドメインが異なる場合)は、下記の手動方法を使ってください:", migAutoNotFound: "このブラウザ/ドメインではJikanのデータが見つかりませんでした。下記の手動方法を使ってください。", migAutoFound: "✨ Jikanのデータが自動的に見つかりました！下の概要を確認してください。",
             migStep1Title: "ステップ1 — Jikanからエクスポート",
             migStep1Body: "ブラウザでJikanを開く → <b>F12</b>キー(DevTools)を押す → <b>コンソール</b>タブ → 送ったエクスポート用スクリプトを貼り付けてEnterを押す。これで<code>jikan_export.json</code>ファイルがダウンロードされます。",
             migStep2Title: "ステップ2 — エクスポートしたファイルを選択",
@@ -1533,6 +1545,7 @@ Um arquivo <code>kairo_backup_antes_migracao.json</code> será baixado automatic
             nkTypeNone: "无", nkTypeRetirement: "退休金", nkTypeDisability: "残疾金", nkTypeSurvivors: "遗属金", nkTypeOthers: "其他", nkPlaceholderMonth: "月", nkPlaceholderDay: "日", nkPlaceholderValue: "金额", nkManualPh: "¥ 精确金额", repWorked: "已出勤",
             migTitle: "从Jikan迁移数据",
             migSubtitle: "导入旧应用Jikan中已记录的天数(上下班、休息)、已填写的年金(Nenkin)以及支出。未经确认不会覆盖任何数据,在进行任何更改前会自动下载您当前Kairo数据的备份。",
+            migAutoTitle: "✨ 自动检测", migAutoBody: "如果Jikan和Kairo在同一个域名下(例如都在yourname.github.io下),Kairo可以直接读取数据,无需导出。", migAutodetectLbl: "自动检测", migManualNote: "如果自动检测没有找到任何数据(域名不同),请使用下面的手动方法:", migAutoNotFound: "在此浏览器/域名中未找到Jikan数据。请使用下面的手动方法。", migAutoFound: "✨ 已自动找到Jikan数据！请查看下方摘要。",
             migStep1Title: "步骤1 — 从Jikan导出",
             migStep1Body: "在浏览器中打开Jikan → 按<b>F12</b>(开发者工具) → <b>控制台</b>选项卡 → 粘贴我发给你的导出脚本并按回车。这会下载一个<code>jikan_export.json</code>文件。",
             migStep2Title: "步骤2 — 选择导出的文件",
@@ -1565,6 +1578,7 @@ Um arquivo <code>kairo_backup_antes_migracao.json</code> será baixado automatic
             nkTypeNone: "없음", nkTypeRetirement: "퇴직연금", nkTypeDisability: "장애연금", nkTypeSurvivors: "유족연금", nkTypeOthers: "기타", nkPlaceholderMonth: "월", nkPlaceholderDay: "일", nkPlaceholderValue: "금액", nkManualPh: "¥ 정확한 금액", repWorked: "근무함",
             migTitle: "Jikan에서 데이터 마이그레이션",
             migSubtitle: "이전 앱 Jikan에서 기록된 날짜(출퇴근, 휴무), 입력된 연금(Nenkin), 지출 내역을 가져옵니다. 확인 없이는 아무것도 덮어쓰지 않으며, 변경 전에 현재 Kairo 데이터의 백업이 자동으로 다운로드됩니다.",
+            migAutoTitle: "✨ 자동 감지", migAutoBody: "Jikan과 Kairo가 같은 도메인에 있다면(예: 둘 다 yourname.github.io 하위), Kairo가 내보내기 없이 데이터를 직접 읽을 수 있습니다.", migAutodetectLbl: "자동으로 감지", migManualNote: "자동 감지에서 아무것도 찾지 못하면(도메인이 다른 경우) 아래의 수동 방법을 사용하세요:", migAutoNotFound: "이 브라우저/도메인에서 Jikan 데이터를 찾을 수 없습니다. 아래의 수동 방법을 사용하세요.", migAutoFound: "✨ Jikan 데이터를 자동으로 찾았습니다! 아래 요약을 확인하세요.",
             migStep1Title: "1단계 — Jikan에서 내보내기",
             migStep1Body: "브라우저에서 Jikan 열기 → <b>F12</b>(개발자 도구) 누르기 → <b>콘솔</b> 탭 → 보내드린 내보내기 스크립트를 붙여넣고 Enter를 누르세요. <code>jikan_export.json</code> 파일이 다운로드됩니다.",
             migStep2Title: "2단계 — 내보낸 파일 선택",
@@ -1597,6 +1611,7 @@ Um arquivo <code>kairo_backup_antes_migracao.json</code> será baixado automatic
             nkTypeNone: "لا", nkTypeRetirement: "معاش التقاعد", nkTypeDisability: "معاش العجز", nkTypeSurvivors: "معاش الورثة", nkTypeOthers: "أخرى", nkPlaceholderMonth: "الشهر", nkPlaceholderDay: "اليوم", nkPlaceholderValue: "القيمة", nkManualPh: "¥ المبلغ الدقيق", repWorked: "عمل",
             migTitle: "ترحيل البيانات من Jikan",
             migSubtitle: "استورد الأيام المسجلة (الدخول/الخروج، أيام الإجازة)، والمعاش (Nenkin) المُدخل، والمصروفات من تطبيقك القديم Jikan. لن يتم استبدال أي شيء دون تأكيد، وسيتم تنزيل نسخة احتياطية من بيانات Kairo الحالية تلقائيًا قبل أي تغيير.",
+            migAutoTitle: "✨ الكشف التلقائي", migAutoBody: "إذا كان Jikan وKairo على نفس النطاق (مثلاً كلاهما تحت yourname.github.io)، يمكن لـ Kairo قراءة البيانات مباشرة دون الحاجة إلى التصدير.", migAutodetectLbl: "الكشف تلقائيًا", migManualNote: "إذا لم يجد الكشف التلقائي أي شيء (نطاقات مختلفة)، استخدم الطريقة اليدوية أدناه:", migAutoNotFound: "لم يتم العثور على بيانات Jikan في هذا المتصفح/النطاق. استخدم الطريقة اليدوية أدناه.", migAutoFound: "✨ تم العثور على بيانات Jikan تلقائيًا! راجع الملخص أدناه.",
             migStep1Title: "الخطوة 1 — التصدير من Jikan",
             migStep1Body: "افتح Jikan في المتصفح ← اضغط <b>F12</b> (أدوات المطور) ← تبويب <b>Console</b> ← الصق سكربت التصدير الذي أرسلته لك واضغط Enter. سيؤدي هذا إلى تنزيل ملف <code>jikan_export.json</code>.",
             migStep2Title: "الخطوة 2 — اختيار الملف المُصدَّر",
@@ -4046,6 +4061,42 @@ Um arquivo <code>kairo_backup_antes_migracao.json</code> será baixado automatic
         saveStore();
         return log;
       }
+
+      function scanLocalStorageForJikan() {
+        // Reads Jikan's raw keys directly from this browser's localStorage —
+        // works only when Jikan and Kairo are served from the same origin
+        // (same domain, e.g. both under yourname.github.io).
+        const dump = {};
+        for (let i = 0; i < localStorage.length; i++) {
+          const key = localStorage.key(i);
+          if (!key) continue;
+          if (key === 'jk3_cfg' || /^jk3_d_\d{4}_\d{1,2}$/.test(key) || /^nk_\d{4}_\d{1,2}$/.test(key) || /^fin_exp_\d{4}_\d{1,2}$/.test(key)) {
+            try { dump[key] = JSON.parse(localStorage.getItem(key)); } catch (e) { /* skip unreadable entry */ }
+          }
+        }
+        return dump;
+      }
+
+      document.getElementById('mig-autodetect-btn').addEventListener('click', () => {
+        const dump = scanLocalStorageForJikan();
+        if (Object.keys(dump).length === 0) {
+          toast(t('migAutoNotFound', 'Nenhum dado do Jikan encontrado neste navegador/domínio. Use o método manual abaixo.'), true);
+          return;
+        }
+        const parsed = parseJikanDump(dump);
+        migParsedData = parsed;
+        const stats = buildMigrationPreview(parsed);
+        const statsWrap = document.getElementById('mig-preview-stats');
+        statsWrap.innerHTML = `
+          <div class="glass-panel rounded-lg p-3 text-center"><div class="text-2xl font-bold text-primary">${stats.daysCount}</div><div class="text-xs text-on-surface-variant">${t('migStatDays', 'dias no calendário')}</div></div>
+          <div class="glass-panel rounded-lg p-3 text-center"><div class="text-2xl font-bold text-primary">${stats.monthsCount}</div><div class="text-xs text-on-surface-variant">${t('migStatMonths', 'meses cobertos')}</div></div>
+          <div class="glass-panel rounded-lg p-3 text-center"><div class="text-2xl font-bold text-primary">${stats.nenkinCount}</div><div class="text-xs text-on-surface-variant">${t('migStatNenkin', 'meses com pensão')}</div></div>
+          <div class="glass-panel rounded-lg p-3 text-center"><div class="text-2xl font-bold text-primary">${stats.expenseCount}</div><div class="text-xs text-on-surface-variant">${t('migStatExpenses', 'gastos (¥{n})').replace('{n}', stats.expenseTotal.toLocaleString())}</div></div>
+        `;
+        document.getElementById('mig-preview-wrap').classList.remove('hidden');
+        document.getElementById('mig-preview-wrap').classList.add('flex');
+        toast(t('migAutoFound', '✨ Dados do Jikan encontrados automaticamente! Confira o resumo abaixo.'));
+      });
 
       document.getElementById('mig-file-input').addEventListener('change', () => {
         document.getElementById('mig-preview-wrap').classList.add('hidden');
