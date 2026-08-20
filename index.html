@@ -186,9 +186,12 @@
     
     /* View Transitions */
     .view { display: none; }
-    .view.active { display: flex; animation: fadeUp 0.3s ease; }
+    .view.active { display: flex; animation: fadeUp 0.32s cubic-bezier(0.16, 1, 0.3, 1); }
+    .view.exiting { animation: fadeDown 0.14s ease forwards; }
     @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-    
+    @keyframes fadeDown { from { opacity: 1; transform: translateY(0); } to { opacity: 0; transform: translateY(-6px); } }
+    .fade-in-up { animation: fadeUp 0.28s cubic-bezier(0.16, 1, 0.3, 1); }
+
     .animate-stagger > * { opacity: 0; animation: fadeUp 0.4s forwards; }
     .animate-stagger > *:nth-child(1) { animation-delay: 0.1s; }
     .animate-stagger > *:nth-child(2) { animation-delay: 0.2s; }
@@ -2183,18 +2186,28 @@ Um arquivo <code>kairo_backup_antes_migracao.json</code> será baixado automatic
           });
           link.classList.add('text-primary', 'font-bold', 'border-r-2', 'border-primary', 'bg-primary/10', 'active');
           link.classList.remove('text-on-surface-variant', 'font-body-lg');
-          
-          views.forEach(v => {
-            v.classList.remove('active');
-            v.classList.add('hidden');
-          });
-          document.getElementById('view-' + targetView).classList.remove('hidden');
-          document.getElementById('view-' + targetView).classList.add('active');
 
-          if (targetView === 'agenda') refreshAgenda();
-          if (targetView === 'finances') refreshFinances();
-          if (targetView === 'reports') refreshReports();
-          closeSideNav();
+          const showTargetView = () => {
+            views.forEach(v => {
+              v.classList.remove('active', 'exiting');
+              v.classList.add('hidden');
+            });
+            document.getElementById('view-' + targetView).classList.remove('hidden');
+            document.getElementById('view-' + targetView).classList.add('active');
+
+            if (targetView === 'agenda') refreshAgenda();
+            if (targetView === 'finances') refreshFinances();
+            if (targetView === 'reports') refreshReports();
+            closeSideNav();
+          };
+
+          const currentActive = document.querySelector('.view.active');
+          if (currentActive && currentActive.id !== 'view-' + targetView) {
+            currentActive.classList.add('exiting');
+            setTimeout(showTargetView, 130);
+          } else {
+            showTargetView();
+          }
         } else {
           toast('This section is not built yet.');
         }
@@ -2274,7 +2287,14 @@ Um arquivo <code>kairo_backup_antes_migracao.json</code> será baixado automatic
       document.querySelectorAll('[data-settings-tab]').forEach(el => {
         const match = el.dataset.settingsTab === tab;
         el.classList.toggle('hidden', !match);
-        if (match) el.classList.add('flex'); else el.classList.remove('flex');
+        if (match) {
+          el.classList.add('flex');
+          el.classList.remove('fade-in-up');
+          void el.offsetWidth; // reflow so the animation restarts every time
+          el.classList.add('fade-in-up');
+        } else {
+          el.classList.remove('flex', 'fade-in-up');
+        }
       });
     }
     const settingsTabSelect = document.getElementById('settings-tab-select');
@@ -2377,8 +2397,15 @@ Um arquivo <code>kairo_backup_antes_migracao.json</code> será baixado automatic
     async function tryUnlockPin() {
       const hash = await hashPin(pinEntered);
       if (hash === store.settings.pinHash) {
-        document.getElementById('pin-lock-screen').classList.add('hidden');
-        document.getElementById('pin-lock-screen').classList.remove('flex');
+        const screen = document.getElementById('pin-lock-screen');
+        screen.style.transition = 'opacity 0.28s ease';
+        screen.style.opacity = '0';
+        setTimeout(() => {
+          screen.classList.add('hidden');
+          screen.classList.remove('flex');
+          screen.style.opacity = '';
+          screen.style.transition = '';
+        }, 280);
         pinEntered = '';
       } else {
         shakePinDots();
@@ -4411,8 +4438,9 @@ Um arquivo <code>kairo_backup_antes_migracao.json</code> será baixado automatic
           <div class="glass-panel rounded-lg p-3 text-center"><div class="text-2xl font-bold text-primary">${stats.nenkinCount}</div><div class="text-xs text-on-surface-variant">${t('migStatNenkin', 'meses com pensão')}</div></div>
           <div class="glass-panel rounded-lg p-3 text-center"><div class="text-2xl font-bold text-primary">${stats.expenseCount}</div><div class="text-xs text-on-surface-variant">${t('migStatExpenses', 'gastos (¥{n})').replace('{n}', stats.expenseTotal.toLocaleString())}</div></div>
         `;
-        document.getElementById('mig-preview-wrap').classList.remove('hidden');
-        document.getElementById('mig-preview-wrap').classList.add('flex');
+        const previewWrap1 = document.getElementById('mig-preview-wrap');
+        previewWrap1.classList.remove('hidden');
+        previewWrap1.classList.add('flex', 'fade-in-up');
         toast(t('migAutoFound', '✨ Dados do Jikan encontrados automaticamente! Confira o resumo abaixo.'));
       });
 
@@ -4443,8 +4471,9 @@ Um arquivo <code>kairo_backup_antes_migracao.json</code> será baixado automatic
               <div class="glass-panel rounded-lg p-3 text-center"><div class="text-2xl font-bold text-primary">${stats.nenkinCount}</div><div class="text-xs text-on-surface-variant">${t('migStatNenkin', 'meses com pensão')}</div></div>
               <div class="glass-panel rounded-lg p-3 text-center"><div class="text-2xl font-bold text-primary">${stats.expenseCount}</div><div class="text-xs text-on-surface-variant">${t('migStatExpenses', 'gastos (¥{n})').replace('{n}', stats.expenseTotal.toLocaleString())}</div></div>
             `;
-            document.getElementById('mig-preview-wrap').classList.remove('hidden');
-            document.getElementById('mig-preview-wrap').classList.add('flex');
+            const previewWrap2 = document.getElementById('mig-preview-wrap');
+            previewWrap2.classList.remove('hidden');
+            previewWrap2.classList.add('flex', 'fade-in-up');
             if (stats.daysCount === 0 && stats.nenkinCount === 0 && stats.expenseCount === 0) {
               toast(t('migNoDataFound', 'Nenhum dado reconhecível foi encontrado nesse arquivo.'), true);
             } else {
@@ -4467,8 +4496,9 @@ Um arquivo <code>kairo_backup_antes_migracao.json</code> será baixado automatic
         if (!confirm(t('migConfirmImport', 'Isso vai importar os dados selecionados do Jikan para o Kairo. Um backup do Kairo será baixado automaticamente antes. Continuar?'))) return;
         const log = applyJikanMigration(migParsedData, opts);
         document.getElementById('mig-result-log').innerHTML = log.map(l => `<p>${l}</p>`).join('');
-        document.getElementById('mig-result-wrap').classList.remove('hidden');
-        document.getElementById('mig-result-wrap').classList.add('flex');
+        const resultWrap = document.getElementById('mig-result-wrap');
+        resultWrap.classList.remove('hidden');
+        resultWrap.classList.add('flex', 'fade-in-up');
         renderCalendar();
         if (selectedKey) selectDate(selectedKey);
         if (typeof refreshFinances === 'function') refreshFinances();
