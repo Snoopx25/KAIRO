@@ -247,6 +247,13 @@
       .no-print { display: none !important; }
     }
 
+    @keyframes pinShake {
+      10%, 90% { transform: translateX(-2px); }
+      20%, 80% { transform: translateX(4px); }
+      30%, 50%, 70% { transform: translateX(-8px); }
+      40%, 60% { transform: translateX(8px); }
+    }
+
     /* Mobile off-canvas navigation */
     #side-nav { transform: translateX(-100%); transition: transform 0.25s ease; }
     #side-nav.nav-open { transform: translateX(0); }
@@ -259,6 +266,34 @@
   </style>
 </head>
 <body class="bg-background text-on-background font-body-lg min-h-screen selection:bg-primary-container selection:text-white overflow-hidden" style="background: linear-gradient(135deg, rgb(5, 11, 20) 0%, rgb(10, 18, 36) 100%);">
+<!-- PIN LOCK SCREEN -->
+<div class="fixed inset-0 z-[100] hidden flex-col items-center justify-center gap-6 px-6" id="pin-lock-screen" style="background: linear-gradient(135deg, rgb(5, 11, 20) 0%, rgb(10, 18, 36) 100%);">
+<div class="h-16 w-16 rounded-2xl shadow-[0_0_20px_rgba(124,58,237,0.5)] overflow-hidden flex items-center justify-center" style="background: linear-gradient(135deg, var(--primary-container), var(--primary));">
+<img alt="Kairo Logo" class="w-10 h-auto" id="pin-lock-logo"/>
+</div>
+<p class="text-on-surface font-bold text-lg" data-i18n="pinLockTitle" id="pin-lock-title">Enter your PIN</p>
+<div class="flex gap-4" id="pin-dots">
+<div class="w-4 h-4 rounded-full border-2 border-outline-variant/50" data-dot="0"></div>
+<div class="w-4 h-4 rounded-full border-2 border-outline-variant/50" data-dot="1"></div>
+<div class="w-4 h-4 rounded-full border-2 border-outline-variant/50" data-dot="2"></div>
+<div class="w-4 h-4 rounded-full border-2 border-outline-variant/50" data-dot="3"></div>
+</div>
+<div class="grid grid-cols-3 gap-4 max-w-[280px]" id="pin-keypad">
+<button class="pin-key h-16 w-16 rounded-full bg-surface-container hover:bg-white/10 text-on-surface text-2xl font-bold transition-colors" data-key="1" type="button">1</button>
+<button class="pin-key h-16 w-16 rounded-full bg-surface-container hover:bg-white/10 text-on-surface text-2xl font-bold transition-colors" data-key="2" type="button">2</button>
+<button class="pin-key h-16 w-16 rounded-full bg-surface-container hover:bg-white/10 text-on-surface text-2xl font-bold transition-colors" data-key="3" type="button">3</button>
+<button class="pin-key h-16 w-16 rounded-full bg-surface-container hover:bg-white/10 text-on-surface text-2xl font-bold transition-colors" data-key="4" type="button">4</button>
+<button class="pin-key h-16 w-16 rounded-full bg-surface-container hover:bg-white/10 text-on-surface text-2xl font-bold transition-colors" data-key="5" type="button">5</button>
+<button class="pin-key h-16 w-16 rounded-full bg-surface-container hover:bg-white/10 text-on-surface text-2xl font-bold transition-colors" data-key="6" type="button">6</button>
+<button class="pin-key h-16 w-16 rounded-full bg-surface-container hover:bg-white/10 text-on-surface text-2xl font-bold transition-colors" data-key="7" type="button">7</button>
+<button class="pin-key h-16 w-16 rounded-full bg-surface-container hover:bg-white/10 text-on-surface text-2xl font-bold transition-colors" data-key="8" type="button">8</button>
+<button class="pin-key h-16 w-16 rounded-full bg-surface-container hover:bg-white/10 text-on-surface text-2xl font-bold transition-colors" data-key="9" type="button">9</button>
+<div></div>
+<button class="pin-key h-16 w-16 rounded-full bg-surface-container hover:bg-white/10 text-on-surface text-2xl font-bold transition-colors" data-key="0" type="button">0</button>
+<button class="h-16 w-16 rounded-full flex items-center justify-center text-on-surface-variant hover:bg-white/10 transition-colors" id="pin-backspace" type="button"><span class="material-symbols-outlined">backspace</span></button>
+</div>
+<button class="text-xs text-on-surface-variant/60 hover:text-on-surface-variant underline transition-colors mt-2" data-i18n="pinForgotLink" id="pin-forgot-link" type="button">Forgot PIN?</button>
+</div>
 <!-- Background Glow Effects -->
 <div class="fixed top-[-10%] left-[-10%] w-[40vw] h-[40vw] bg-[#7c3aed] rounded-full blur-[120px] opacity-20 pointer-events-none z-0 animate-pulse"></div>
 <div class="fixed bottom-[-10%] right-[-10%] w-[40vw] h-[40vw] bg-[#1d4ed8] rounded-full blur-[120px] opacity-20 pointer-events-none z-0 animate-pulse"></div>
@@ -691,6 +726,29 @@
 </div>
 <div class="mt-4 flex justify-end">
 <button class="text-xs text-on-surface-variant/60 hover:text-on-surface-variant underline transition-colors" data-i18n="agNoticeReenableLink" id="ag-notice-reenable-link" type="button">Show dismissed notices again</button>
+</div>
+</div>
+
+<!-- APP LOCK / PIN CARD -->
+<div class="glass-panel rounded-xl p-card-padding flex flex-col gap-4">
+<h2 class="text-2xl font-bold text-primary flex items-center gap-2">
+<span class="material-symbols-outlined">lock</span> <span data-i18n="pinCardTitle">App Lock (PIN)</span>
+</h2>
+<p class="text-sm text-on-surface-variant" data-i18n="pinCardSubtitle">Ask for a 4-digit PIN every time Kairo opens. This isn't strong security (everything stays on this device) — it's just a quick deterrent against someone picking up your phone and opening the app.</p>
+
+<label class="flex items-center gap-3 cursor-pointer select-none">
+<input class="rounded w-5 h-5" id="pin-enable-toggle" type="checkbox"/>
+<span class="text-sm font-semibold text-on-surface" data-i18n="pinEnableLbl">Require PIN to open Kairo</span>
+</label>
+
+<div class="hidden flex-col gap-3 p-4 rounded-lg bg-surface-container/60 border border-outline-variant/20" id="pin-setup-wrap">
+<p class="text-sm font-semibold text-on-surface" id="pin-setup-title" data-i18n="pinSetupTitle">Set your PIN</p>
+<div class="flex flex-wrap gap-3">
+<input class="bg-surface-container rounded-lg border border-outline-variant/30 text-on-surface p-2 w-32 tracking-widest text-center focus:border-primary focus:ring-1 focus:ring-primary outline-none" data-i18n-ph="pinNewPh" id="pin-new" inputmode="numeric" maxlength="4" pattern="[0-9]*" placeholder="New PIN" type="password"/>
+<input class="bg-surface-container rounded-lg border border-outline-variant/30 text-on-surface p-2 w-32 tracking-widest text-center focus:border-primary focus:ring-1 focus:ring-primary outline-none" data-i18n-ph="pinConfirmPh" id="pin-confirm" inputmode="numeric" maxlength="4" pattern="[0-9]*" placeholder="Confirm" type="password"/>
+<button class="py-2 px-4 rounded-lg bg-primary hover:bg-primary-container text-on-primary font-bold text-sm transition-colors" data-i18n="pinSetBtn" id="pin-set-btn" type="button">Set PIN</button>
+</div>
+<p class="text-xs text-error hidden" id="pin-setup-error"></p>
 </div>
 </div>
 
@@ -1406,7 +1464,7 @@ Um arquivo <code>kairo_backup_antes_migracao.json</code> será baixado automatic
 
     const TRANSLATIONS = {
         en: {
-            appSubtitle: "Your Time. Your Work.", navDashboard: "Dashboard", navAgenda: "Agenda", navFinances: "Finances", navReports: "Reports", navSettings: "Settings", clockIn: "Clock In", clockOut: "Clock Out", daysWorked: "Days worked", totalEarned: "Total earned", overtimeHrs: "Overtime hrs", absences: "Absences", monthlyGoals: "Monthly Goals", edit: "Edit", savingsGoal: "Savings Goal", overtimeLimit: "Overtime Limit", clockInLbl: "Clock in", clockOutLbl: "Clock out", overtimeLbl: "Overtime", statusLbl: "Status", shift2Lbl: "Shift 2 (optional)", auto: "Auto", manual: "Manual", hourlyRateLbl: "Hourly rate", clockIn2Lbl: "Clock in 2", clockOut2Lbl: "Clock out 2", overtime2Lbl: "Overtime 2", valueLbl: "Value (¥)", hoursLbl: "Hours", pensionLbl: "Pension (Nenkin)", totalPension: "Total Pension", dayTotal: "Day total", clear: "Clear", save: "Save", profIdentity: "Professional Identity", userNameLbl: "User Name", companyNameLbl: "Company Name", companyPhoneLbl: "Company Phone", avatarLbl: "Profile Picture", sysParams: "System Parameters", hourlyWageCfg: "Hourly Wage (¥)", otMultCfg: "Overtime Multiplier (%)", dailyHrsCfg: "Standard Daily Hours", lunchBreakCfg: "Lunch Break (mins)", appearance: "Appearance & Language", languageLbl: "Language", currencyLbl: "Currency", themeColorLbl: "Theme Color", saveSettings: "Save Settings",
+            appSubtitle: "Your Time. Your Work.", pinCardTitle: "App Lock (PIN)", pinCardSubtitle: "Ask for a 4-digit PIN every time Kairo opens. This isn't strong security (everything stays on this device) — it's just a quick deterrent against someone picking up your phone and opening the app.", pinEnableLbl: "Require PIN to open Kairo", pinSetupTitle: "Set your PIN", pinNewPh: "New PIN", pinConfirmPh: "Confirm", pinSetBtn: "Set PIN", pinLockTitle: "Enter your PIN", pinForgotLink: "Forgot PIN?", pinErrDigits: "PIN must be exactly 4 digits.", pinErrMismatch: "PINs don't match.", pinSetOk: "PIN set ✓", pinForgotPrompt: "This disables the PIN (your work/finance data is untouched). Type RESET to confirm:", navDashboard: "Dashboard", navAgenda: "Agenda", navFinances: "Finances", navReports: "Reports", navSettings: "Settings", clockIn: "Clock In", clockOut: "Clock Out", daysWorked: "Days worked", totalEarned: "Total earned", overtimeHrs: "Overtime hrs", absences: "Absences", monthlyGoals: "Monthly Goals", edit: "Edit", savingsGoal: "Savings Goal", overtimeLimit: "Overtime Limit", clockInLbl: "Clock in", clockOutLbl: "Clock out", overtimeLbl: "Overtime", statusLbl: "Status", shift2Lbl: "Shift 2 (optional)", auto: "Auto", manual: "Manual", hourlyRateLbl: "Hourly rate", clockIn2Lbl: "Clock in 2", clockOut2Lbl: "Clock out 2", overtime2Lbl: "Overtime 2", valueLbl: "Value (¥)", hoursLbl: "Hours", pensionLbl: "Pension (Nenkin)", totalPension: "Total Pension", dayTotal: "Day total", clear: "Clear", save: "Save", profIdentity: "Professional Identity", userNameLbl: "User Name", companyNameLbl: "Company Name", companyPhoneLbl: "Company Phone", avatarLbl: "Profile Picture", sysParams: "System Parameters", hourlyWageCfg: "Hourly Wage (¥)", otMultCfg: "Overtime Multiplier (%)", dailyHrsCfg: "Standard Daily Hours", lunchBreakCfg: "Lunch Break (mins)", appearance: "Appearance & Language", languageLbl: "Language", currencyLbl: "Currency", themeColorLbl: "Theme Color", saveSettings: "Save Settings",
             cancel: "Cancel", delete: "Delete",
             agendaTitle: "Agenda", agendaSubtitle: "Appointments, reminders and notes", agRemindersOff: "Reminders off", agRemindersOn: "Reminders on", agNoticeTitle: "Heads up about reminders", agNoticeBody: "Agenda reminders only notify while Kairo is open — they don't appear on your phone's lock screen.", agNoticeDismiss: "Got it", agNoticeReenableLink: "Show dismissed notices again", agNoticeReenablePrompt: "Enter the code to re-enable notices:", agNoticeReenabled: "Notices re-enabled ✓", agNoticeWrongCode: "Wrong code.",
             agNewAppt: "New appointment", agUpcoming: "Upcoming (next 14 days)", agToday: "Today", agAllDay: "All day",
@@ -1476,7 +1534,7 @@ Um arquivo <code>kairo_backup_antes_migracao.json</code> será baixado automatic
             migLogFinance: "💸 Finance: {n} expense(s) imported into Kairo."
         },
         pt: {
-            appSubtitle: "Seu Tempo. Seu Trabalho.", navDashboard: "Painel", navAgenda: "Agenda", navFinances: "Finanças", navReports: "Relatórios", navSettings: "Configurações", clockIn: "Bater Ponto", clockOut: "Encerrar", daysWorked: "Dias trabalhados", totalEarned: "Total ganho", overtimeHrs: "Horas extras", absences: "Faltas", monthlyGoals: "Metas Mensais", edit: "Editar", savingsGoal: "Meta de Poupança", overtimeLimit: "Limite de Hora Extra", clockInLbl: "Entrada", clockOutLbl: "Saída", overtimeLbl: "Hora Extra", statusLbl: "Status", shift2Lbl: "Turno 2 (opcional)", auto: "Auto", manual: "Manual", hourlyRateLbl: "Valor hora", clockIn2Lbl: "Entrada 2", clockOut2Lbl: "Saída 2", overtime2Lbl: "Hora Extra 2", valueLbl: "Valor (¥)", hoursLbl: "Horas", pensionLbl: "Previdência (Nenkin)", totalPension: "Previdência Total", dayTotal: "Total do dia", clear: "Limpar", save: "Salvar", profIdentity: "Identidade Profissional", userNameLbl: "Nome do Usuário", companyNameLbl: "Nome da Empresa", companyPhoneLbl: "Telefone da Empresa", avatarLbl: "Foto de Perfil", sysParams: "Parâmetros do Sistema", hourlyWageCfg: "Valor Hora (¥)", otMultCfg: "Multiplicador de HE (%)", dailyHrsCfg: "Horas Diárias Padrão", lunchBreakCfg: "Intervalo (mins)", appearance: "Aparência e Idioma", languageLbl: "Idioma", currencyLbl: "Moeda", themeColorLbl: "Cor do Tema", saveSettings: "Salvar Configurações",
+            appSubtitle: "Seu Tempo. Seu Trabalho.", pinCardTitle: "Bloqueio do App (PIN)", pinCardSubtitle: "Pede um PIN de 4 dígitos toda vez que o Kairo abre. Não é uma segurança forte (tudo fica só neste aparelho) — é só um freio rápido pra alguém não abrir o app se pegar seu celular.", pinEnableLbl: "Exigir PIN para abrir o Kairo", pinSetupTitle: "Defina seu PIN", pinNewPh: "Novo PIN", pinConfirmPh: "Confirmar", pinSetBtn: "Definir PIN", pinLockTitle: "Digite seu PIN", pinForgotLink: "Esqueceu o PIN?", pinErrDigits: "O PIN precisa ter exatamente 4 dígitos.", pinErrMismatch: "Os PINs não coincidem.", pinSetOk: "PIN definido ✓", pinForgotPrompt: "Isso desativa o PIN (seus dados de trabalho/finanças não são afetados). Digite RESET para confirmar:", navDashboard: "Painel", navAgenda: "Agenda", navFinances: "Finanças", navReports: "Relatórios", navSettings: "Configurações", clockIn: "Bater Ponto", clockOut: "Encerrar", daysWorked: "Dias trabalhados", totalEarned: "Total ganho", overtimeHrs: "Horas extras", absences: "Faltas", monthlyGoals: "Metas Mensais", edit: "Editar", savingsGoal: "Meta de Poupança", overtimeLimit: "Limite de Hora Extra", clockInLbl: "Entrada", clockOutLbl: "Saída", overtimeLbl: "Hora Extra", statusLbl: "Status", shift2Lbl: "Turno 2 (opcional)", auto: "Auto", manual: "Manual", hourlyRateLbl: "Valor hora", clockIn2Lbl: "Entrada 2", clockOut2Lbl: "Saída 2", overtime2Lbl: "Hora Extra 2", valueLbl: "Valor (¥)", hoursLbl: "Horas", pensionLbl: "Previdência (Nenkin)", totalPension: "Previdência Total", dayTotal: "Total do dia", clear: "Limpar", save: "Salvar", profIdentity: "Identidade Profissional", userNameLbl: "Nome do Usuário", companyNameLbl: "Nome da Empresa", companyPhoneLbl: "Telefone da Empresa", avatarLbl: "Foto de Perfil", sysParams: "Parâmetros do Sistema", hourlyWageCfg: "Valor Hora (¥)", otMultCfg: "Multiplicador de HE (%)", dailyHrsCfg: "Horas Diárias Padrão", lunchBreakCfg: "Intervalo (mins)", appearance: "Aparência e Idioma", languageLbl: "Idioma", currencyLbl: "Moeda", themeColorLbl: "Cor do Tema", saveSettings: "Salvar Configurações",
             cancel: "Cancelar", delete: "Excluir",
             agendaTitle: "Agenda", agendaSubtitle: "Compromissos, lembretes e anotações", agRemindersOff: "Lembretes desativados", agRemindersOn: "Lembretes ativados", agNoticeTitle: "Aviso sobre os lembretes", agNoticeBody: "Os lembretes da Agenda só avisam enquanto o Kairo está aberto — eles não aparecem na tela de bloqueio do celular.", agNoticeDismiss: "Entendi", agNoticeReenableLink: "Mostrar avisos dispensados novamente", agNoticeReenablePrompt: "Digite o código para reativar os avisos:", agNoticeReenabled: "Avisos reativados ✓", agNoticeWrongCode: "Código incorreto.",
             agNewAppt: "Novo compromisso", agUpcoming: "Próximos (14 dias)", agToday: "Hoje", agAllDay: "Dia inteiro",
@@ -1546,7 +1604,7 @@ Um arquivo <code>kairo_backup_antes_migracao.json</code> será baixado automatic
             migLogFinance: "💸 Finanças: {n} gasto(s) importado(s) para o Kairo."
         },
         ja: {
-            appSubtitle: "あなたの時間。あなたの仕事。", navDashboard: "ダッシュボード", navAgenda: "予定", navFinances: "財務", navReports: "レポート", navSettings: "設定", clockIn: "出勤", clockOut: "退勤", daysWorked: "出勤日数", totalEarned: "総収入", overtimeHrs: "残業時間", absences: "欠勤", monthlyGoals: "今月の目標", edit: "編集", savingsGoal: "貯金額の目標", overtimeLimit: "残業時間の上限", clockInLbl: "出勤", clockOutLbl: "退勤", overtimeLbl: "残業", statusLbl: "ステータス", shift2Lbl: "シフト 2 (任意)", auto: "自動", manual: "手動", hourlyRateLbl: "時給", clockIn2Lbl: "出勤 2", clockOut2Lbl: "退勤 2", overtime2Lbl: "残業 2", valueLbl: "金額 (¥)", hoursLbl: "時間", pensionLbl: "年金", totalPension: "年金合計", dayTotal: "日計", clear: "クリア", save: "保存", profIdentity: "プロフィール", userNameLbl: "ユーザー名", companyNameLbl: "会社名", companyPhoneLbl: "会社の電話番号", avatarLbl: "プロフィール画像", sysParams: "システムパラメータ", hourlyWageCfg: "時給 (¥)", otMultCfg: "残業割増 (%)", dailyHrsCfg: "標準労働時間", lunchBreakCfg: "休憩 (分)", appearance: "外観と設定", languageLbl: "言語", currencyLbl: "通貨", themeColorLbl: "テーマカラー", saveSettings: "設定を保存",
+            appSubtitle: "あなたの時間。あなたの仕事。", pinCardTitle: "アプリロック (PIN)", pinCardSubtitle: "Kairoを開くたびに4桁のPINを要求します。強固なセキュリティではありません（データはすべてこの端末内）— 誰かがスマホを手に取ってすぐ開けないようにする簡易的な抑止力です。", pinEnableLbl: "Kairoを開くのにPINを必須にする", pinSetupTitle: "PINを設定", pinNewPh: "新しいPIN", pinConfirmPh: "確認", pinSetBtn: "PINを設定", pinLockTitle: "PINを入力してください", pinForgotLink: "PINを忘れた場合", pinErrDigits: "PINは4桁の数字で入力してください。", pinErrMismatch: "PINが一致しません。", pinSetOk: "PINを設定しました ✓", pinForgotPrompt: "これによりPINが無効になります（仕事/財務データには影響しません）。確認のためRESETと入力してください:", navDashboard: "ダッシュボード", navAgenda: "予定", navFinances: "財務", navReports: "レポート", navSettings: "設定", clockIn: "出勤", clockOut: "退勤", daysWorked: "出勤日数", totalEarned: "総収入", overtimeHrs: "残業時間", absences: "欠勤", monthlyGoals: "今月の目標", edit: "編集", savingsGoal: "貯金額の目標", overtimeLimit: "残業時間の上限", clockInLbl: "出勤", clockOutLbl: "退勤", overtimeLbl: "残業", statusLbl: "ステータス", shift2Lbl: "シフト 2 (任意)", auto: "自動", manual: "手動", hourlyRateLbl: "時給", clockIn2Lbl: "出勤 2", clockOut2Lbl: "退勤 2", overtime2Lbl: "残業 2", valueLbl: "金額 (¥)", hoursLbl: "時間", pensionLbl: "年金", totalPension: "年金合計", dayTotal: "日計", clear: "クリア", save: "保存", profIdentity: "プロフィール", userNameLbl: "ユーザー名", companyNameLbl: "会社名", companyPhoneLbl: "会社の電話番号", avatarLbl: "プロフィール画像", sysParams: "システムパラメータ", hourlyWageCfg: "時給 (¥)", otMultCfg: "残業割増 (%)", dailyHrsCfg: "標準労働時間", lunchBreakCfg: "休憩 (分)", appearance: "外観と設定", languageLbl: "言語", currencyLbl: "通貨", themeColorLbl: "テーマカラー", saveSettings: "設定を保存",
             agAllDay: "終日", agCatFinance: "💰 お金", agCatHealth: "💊 健康", agCatOther: "📌 その他", agCatPersonal: "🏠 プライベート", agCatWork: "💼 仕事", agFieldCategory: "カテゴリー", agFieldDate: "日付", agFieldEnd: "終了", agFieldLocation: "場所", agFieldLocationPh: "例: クリニック、オフィス、Zoomリンク", agFieldNotes: "メモ", agFieldNotesPh: "詳細、議題、持ち物など...", agFieldReminder: "リマインダー", agFieldRepeat: "繰り返し", agFieldStart: "開始", agFieldTitle: "タイトル", agFieldTitlePh: "例: 歯科の予約", agFieldUntil: "繰り返し終了日", agNewAppt: "新しい予定", agNoEvents: "この日の予定はありません。", agNoteBodyPh: "メモを入力...", agNoteTitlePh: "メモのタイトル", agNotes: "メモ", agRemNone: "なし", agRemindersOff: "リマインダーOFF", agRemindersOn: "リマインダーON", agNoticeTitle: "リマインダーについての注意", agNoticeBody: "予定のリマインダーはKairoを開いている間のみ通知されます — スマホのロック画面には表示されません。", agNoticeDismiss: "了解", agNoticeReenableLink: "非表示にした通知を再表示", agNoticeReenablePrompt: "通知を再度有効にするコードを入力してください:", agNoticeReenabled: "通知を再度有効にしました ✓", agNoticeWrongCode: "コードが正しくありません。", agRepDaily: "毎日", agRepMonthly: "毎月", agRepNone: "繰り返さない", agRepWeekly: "毎週", agToday: "今日", agUpcoming: "今後の予定 (14日間)", agendaSubtitle: "予定、リマインダー、メモ", agendaTitle: "予定", cancel: "キャンセル", delete: "削除", finAddFunds: "追加", finAddFundsPrompt: "いくら追加しますか？ (¥)", finBalance: "収支", finBillAmount: "金額 (¥)", finBillDay: "支払日", finBillTitle: "請求名", finBillTitlePh: "例: 家賃、インターネット、Netflix", finBills: "定期支払い", finBudgets: "予算", finCatAlimentacao: "食費", finCatAssinaturas: "サブスク", finCatFreelance: "フリーランス", finCatInvestimento: "投資", finCatLazer: "娯楽", finCatMoradia: "住居費", finCatOutro: "その他", finCatOutros: "その他", finCatSalario: "給料", finCatSaude: "健康", finCatTransporte: "交通費", finChartBar: "収入と支出 (6ヶ月)", finChartLine: "累積収支", finChartPie: "カテゴリー別支出", finExpense: "支出", finExport: "CSVエクスポート", finFieldAmount: "金額 (¥)", finFieldCategory: "カテゴリー", finFieldDate: "日付", finFieldDesc: "説明", finFieldDescPh: "例: スーパーでの買い物", finFieldPayment: "支払方法", finFieldReminder: "リマインダー", finFilterAll: "すべて", finFilterAllCats: "すべてのカテゴリー", finGoalCurrent: "現在の貯金額 (¥)", finGoalDeadline: "期限 (任意)", finGoalNamePh: "例: 大阪旅行", finGoalTarget: "目標額 (¥)", finGoals: "貯金目標", finIncome: "収入", finInstallment: "分割払いです", finInstallmentTotal: "分割回数", finInstallmentTotalHint: "合計", finNewBill: "新しい支払い", finNewTx: "新しい取引", finNoBills: "まだ定期支払いがありません。", finNoExpenses: "今月の支出はありません。", finNoGoals: "まだ貯金目標がありません。", finNoTx: "取引が見つかりません。", finPayCard: "💳 カード", finPayCash: "💵 現金", finPayPix: "📱 Pix", finSavingsRate: "貯蓄率", finSearchPh: "検索...", finStatement: "明細", finSubtitle: "収入、支出、予算、目標", finTitle: "財務", repAbsent2: "欠勤", repBreakdown: "月別内訳", repColMonth: "月", repDayOff2: "休み", repDownload: "サマリーをダウンロード", repHeatmap: "出勤ヒートマップ", repHoursWorked: "労働時間", repInsightEmpty: "まだデータが不足しています。記録を続けるとここにインサイトが表示されます。", repInsightExpenseDown: "前期比で支出が{n}%減少しました。", repInsightExpenseUp: "前期比で支出が{n}%増加しました。", repInsightFewerDays: "前期より{n}日少なく勤務しました。", repInsightIncomeDown: "前期比で収入が{n}%減少しました。", repInsightIncomeUp: "前期比で収入が{n}%増加しました。", repInsightMoreDays: "前期より{n}日多く勤務しました。", repInsightOvertime: "この期間で{n}時間の残業を記録しました。", repInsightSavingsRate: "この期間の貯蓄率は{n}%でした。", repInsightTopCat: "最大の支出カテゴリーは{cat}（支出の{pct}%）でした。", repInsights: "インサイト", repNoRecord: "記録なし", repPrint: "印刷", repSubtitle: "傾向、比較、インサイト", repTitle: "レポート", repTrend: "労働時間と残業の推移 (12ヶ月)", repVsPrevious: "前期比",
             statusAuto: "— 自動", statusWork: "✅ 出勤", statusAbsent: "❌ 欠勤", statusDayOff: "🌴 休み", statusHoliday: "🎉 祝日", statusHalfDay: "🌗 半日", statusSickNote: "📋 病欠", statusBadgeWork: "✅ 出勤", statusBadgeAbsent: "❌ 欠勤", statusBadgeDayOff: "🌴 休み", statusBadgeHoliday: "🎉 祝日", statusBadgeHalfDay: "🌗 半日", statusBadgeSickNote: "📋 病欠", statusBadgeNone: "➖ 記録なし",
             nkTypeNone: "なし", nkTypeRetirement: "退職年金", nkTypeDisability: "障害年金", nkTypeSurvivors: "遺族年金", nkTypeOthers: "その他", nkPlaceholderMonth: "月", nkPlaceholderDay: "日", nkPlaceholderValue: "金額", nkManualPh: "¥ 正確な金額", repWorked: "出勤",
@@ -1579,7 +1637,7 @@ Um arquivo <code>kairo_backup_antes_migracao.json</code> será baixado automatic
             migLogFinance: "💸 財務: {n}件の支出をKairoにインポートしました。"
         },
         zh: {
-            appSubtitle: "你的时间。你的工作。", navDashboard: "仪表板", navAgenda: "日程", navFinances: "财务", navReports: "报告", navSettings: "设置", clockIn: "打卡", clockOut: "下班", daysWorked: "工作天数", totalEarned: "总收入", overtimeHrs: "加班时间", absences: "缺勤", monthlyGoals: "每月目标", edit: "编辑", savingsGoal: "储蓄目标", overtimeLimit: "加班上限", clockInLbl: "上班", clockOutLbl: "下班", overtimeLbl: "加班", statusLbl: "状态", shift2Lbl: "班次 2 (可选)", auto: "自动", manual: "手动", hourlyRateLbl: "时薪", clockIn2Lbl: "上班 2", clockOut2Lbl: "下班 2", overtime2Lbl: "加班 2", valueLbl: "金额 (¥)", hoursLbl: "小时", pensionLbl: "年金", totalPension: "年金总计", dayTotal: "日总计", clear: "清除", save: "保存", profIdentity: "职业信息", userNameLbl: "用户名", companyNameLbl: "公司名称", companyPhoneLbl: "公司电话", avatarLbl: "头像", sysParams: "系统参数", hourlyWageCfg: "时薪 (¥)", otMultCfg: "加班倍数 (%)", dailyHrsCfg: "标准日工时", lunchBreakCfg: "午休 (分钟)", appearance: "外观与语言", languageLbl: "语言", currencyLbl: "货币", themeColorLbl: "主题颜色", saveSettings: "保存设置",
+            appSubtitle: "你的时间。你的工作。", pinCardTitle: "应用锁定 (PIN)", pinCardSubtitle: "每次打开Kairo时要求输入4位PIN码。这不是强安全措施(所有数据仍保存在本设备)——只是防止别人拿到你的手机后随意打开应用的简单防护。", pinEnableLbl: "打开Kairo时需要PIN码", pinSetupTitle: "设置PIN码", pinNewPh: "新PIN码", pinConfirmPh: "确认", pinSetBtn: "设置PIN", pinLockTitle: "请输入PIN码", pinForgotLink: "忘记PIN码？", pinErrDigits: "PIN码必须是4位数字。", pinErrMismatch: "两次输入的PIN码不一致。", pinSetOk: "PIN码已设置 ✓", pinForgotPrompt: "这将禁用PIN码(不会影响你的工作/财务数据)。输入RESET确认：", navDashboard: "仪表板", navAgenda: "日程", navFinances: "财务", navReports: "报告", navSettings: "设置", clockIn: "打卡", clockOut: "下班", daysWorked: "工作天数", totalEarned: "总收入", overtimeHrs: "加班时间", absences: "缺勤", monthlyGoals: "每月目标", edit: "编辑", savingsGoal: "储蓄目标", overtimeLimit: "加班上限", clockInLbl: "上班", clockOutLbl: "下班", overtimeLbl: "加班", statusLbl: "状态", shift2Lbl: "班次 2 (可选)", auto: "自动", manual: "手动", hourlyRateLbl: "时薪", clockIn2Lbl: "上班 2", clockOut2Lbl: "下班 2", overtime2Lbl: "加班 2", valueLbl: "金额 (¥)", hoursLbl: "小时", pensionLbl: "年金", totalPension: "年金总计", dayTotal: "日总计", clear: "清除", save: "保存", profIdentity: "职业信息", userNameLbl: "用户名", companyNameLbl: "公司名称", companyPhoneLbl: "公司电话", avatarLbl: "头像", sysParams: "系统参数", hourlyWageCfg: "时薪 (¥)", otMultCfg: "加班倍数 (%)", dailyHrsCfg: "标准日工时", lunchBreakCfg: "午休 (分钟)", appearance: "外观与语言", languageLbl: "语言", currencyLbl: "货币", themeColorLbl: "主题颜色", saveSettings: "保存设置",
             agAllDay: "全天", agCatFinance: "💰 财务", agCatHealth: "💊 健康", agCatOther: "📌 其他", agCatPersonal: "🏠 个人", agCatWork: "💼 工作", agFieldCategory: "类别", agFieldDate: "日期", agFieldEnd: "结束", agFieldLocation: "地点", agFieldLocationPh: "例如：诊所、办公室、Zoom链接", agFieldNotes: "备注", agFieldNotesPh: "详情、议程、需携带物品...", agFieldReminder: "提醒", agFieldRepeat: "重复", agFieldStart: "开始", agFieldTitle: "标题", agFieldTitlePh: "例如：牙医预约", agFieldUntil: "重复至", agNewAppt: "新建日程", agNoEvents: "这一天没有日程安排。", agNoteBodyPh: "写下你的备注...", agNoteTitlePh: "备注标题", agNotes: "备注", agRemNone: "无", agRemindersOff: "提醒已关闭", agRemindersOn: "提醒已开启", agNoticeTitle: "关于提醒的说明", agNoticeBody: "日程提醒仅在Kairo打开时通知 — 不会显示在手机锁屏上。", agNoticeDismiss: "知道了", agNoticeReenableLink: "重新显示已关闭的提示", agNoticeReenablePrompt: "请输入重新启用提示的代码：", agNoticeReenabled: "提示已重新启用 ✓", agNoticeWrongCode: "代码错误。", agRepDaily: "每天", agRepMonthly: "每月", agRepNone: "不重复", agRepWeekly: "每周", agToday: "今天", agUpcoming: "即将到来 (未来14天)", agendaSubtitle: "日程、提醒和备注", agendaTitle: "日程", cancel: "取消", delete: "删除", finAddFunds: "添加资金", finAddFundsPrompt: "要添加多少金额？(¥)", finBalance: "结余", finBillAmount: "金额 (¥)", finBillDay: "每月扣款日", finBillTitle: "账单名称", finBillTitlePh: "例如：房租、网络、Netflix", finBills: "固定账单", finBudgets: "预算", finCatAlimentacao: "餐饮", finCatAssinaturas: "订阅服务", finCatFreelance: "自由职业", finCatInvestimento: "投资", finCatLazer: "娱乐", finCatMoradia: "住房", finCatOutro: "其他", finCatOutros: "其他", finCatSalario: "工资", finCatSaude: "健康", finCatTransporte: "交通", finChartBar: "收入与支出 (6个月)", finChartLine: "累计结余", finChartPie: "按类别支出", finExpense: "支出", finExport: "导出CSV", finFieldAmount: "金额 (¥)", finFieldCategory: "类别", finFieldDate: "日期", finFieldDesc: "描述", finFieldDescPh: "例如：超市购物", finFieldPayment: "支付方式", finFieldReminder: "提醒", finFilterAll: "全部", finFilterAllCats: "所有类别", finGoalCurrent: "已存金额 (¥)", finGoalDeadline: "截止日期（可选）", finGoalNamePh: "例如：大阪旅行", finGoalTarget: "目标金额 (¥)", finGoals: "储蓄目标", finIncome: "收入", finInstallment: "这是分期付款", finInstallmentTotal: "分期总数", finInstallmentTotalHint: "总计，共", finNewBill: "新建账单", finNewTx: "新建交易", finNoBills: "暂无固定账单。", finNoExpenses: "本月没有支出。", finNoGoals: "暂无储蓄目标。", finNoTx: "未找到交易记录。", finPayCard: "💳 银行卡", finPayCash: "💵 现金", finPayPix: "📱 Pix", finSavingsRate: "储蓄率", finSearchPh: "搜索...", finStatement: "账单明细", finSubtitle: "收入、支出、预算与目标", finTitle: "财务", repAbsent2: "缺勤", repBreakdown: "每月明细", repColMonth: "月份", repDayOff2: "休息日", repDownload: "下载摘要", repHeatmap: "出勤热力图", repHoursWorked: "工作时长", repInsightEmpty: "数据尚不充足——持续记录以查看洞察分析。", repInsightExpenseDown: "支出较上一周期减少了{n}%。", repInsightExpenseUp: "支出较上一周期增加了{n}%。", repInsightFewerDays: "你这期比上期少工作了{n}天。", repInsightIncomeDown: "收入较上一周期减少了{n}%。", repInsightIncomeUp: "收入较上一周期增加了{n}%。", repInsightMoreDays: "你这期比上期多工作了{n}天。", repInsightOvertime: "本期你记录了{n}小时的加班。", repInsightSavingsRate: "本期你的储蓄率为{n}%。", repInsightTopCat: "你最大的支出类别是{cat}（占支出的{pct}%）。", repInsights: "洞察分析", repNoRecord: "无记录", repPrint: "打印", repSubtitle: "趋势、对比与洞察分析", repTitle: "报告", repTrend: "工时与加班趋势 (12个月)", repVsPrevious: "较上一周期",
             statusAuto: "— 自动", statusWork: "✅ 已出勤", statusAbsent: "❌ 缺勤", statusDayOff: "🌴 休息", statusHoliday: "🎉 假日", statusHalfDay: "🌗 半天", statusSickNote: "📋 病假", statusBadgeWork: "✅ 已出勤", statusBadgeAbsent: "❌ 缺勤", statusBadgeDayOff: "🌴 休息", statusBadgeHoliday: "🎉 假日", statusBadgeHalfDay: "🌗 半天", statusBadgeSickNote: "📋 病假", statusBadgeNone: "➖ 无记录",
             nkTypeNone: "无", nkTypeRetirement: "退休金", nkTypeDisability: "残疾金", nkTypeSurvivors: "遗属金", nkTypeOthers: "其他", nkPlaceholderMonth: "月", nkPlaceholderDay: "日", nkPlaceholderValue: "金额", nkManualPh: "¥ 精确金额", repWorked: "已出勤",
@@ -1612,7 +1670,7 @@ Um arquivo <code>kairo_backup_antes_migracao.json</code> será baixado automatic
             migLogFinance: "💸 财务:已将{n}笔支出导入Kairo。"
         },
         ko: {
-            appSubtitle: "당신의 시간. 당신의 일.", navDashboard: "대시보드", navAgenda: "일정", navFinances: "재무", navReports: "보고서", navSettings: "설정", clockIn: "출근", clockOut: "퇴근", daysWorked: "근무 일수", totalEarned: "총 수입", overtimeHrs: "초과 근무 시간", absences: "결근", monthlyGoals: "월간 목표", edit: "편집", savingsGoal: "저축 목표", overtimeLimit: "초과 근무 한도", clockInLbl: "출근", clockOutLbl: "퇴근", overtimeLbl: "초과 근무", statusLbl: "상태", shift2Lbl: "교대 2 (선택)", auto: "자동", manual: "수동", hourlyRateLbl: "시급", clockIn2Lbl: "출근 2", clockOut2Lbl: "퇴근 2", overtime2Lbl: "초과 근무 2", valueLbl: "금액 (¥)", hoursLbl: "시간", pensionLbl: "연금", totalPension: "연금 총액", dayTotal: "일일 합계", clear: "지우기", save: "저장", profIdentity: "전문가 정보", userNameLbl: "사용자 이름", companyNameLbl: "회사 이름", companyPhoneLbl: "회사 전화번호", avatarLbl: "프로필 사진", sysParams: "시스템 매개변수", hourlyWageCfg: "시급 (¥)", otMultCfg: "초과 근무 승수 (%)", dailyHrsCfg: "표준 일일 시간", lunchBreakCfg: "점심 시간 (분)", appearance: "모양 및 언어", languageLbl: "언어", currencyLbl: "통화", themeColorLbl: "테마 색상", saveSettings: "설정 저장",
+            appSubtitle: "당신의 시간. 당신의 일.", pinCardTitle: "앱 잠금 (PIN)", pinCardSubtitle: "Kairo를 열 때마다 4자리 PIN을 요구합니다. 강력한 보안은 아니며(모든 데이터는 이 기기에만 저장됨) 누군가 휴대폰을 집어 들었을 때 바로 열지 못하게 하는 간단한 방지책일 뿐입니다.", pinEnableLbl: "Kairo를 열 때 PIN 요구", pinSetupTitle: "PIN 설정", pinNewPh: "새 PIN", pinConfirmPh: "확인", pinSetBtn: "PIN 설정", pinLockTitle: "PIN을 입력하세요", pinForgotLink: "PIN을 잊으셨나요?", pinErrDigits: "PIN은 정확히 4자리 숫자여야 합니다.", pinErrMismatch: "PIN이 일치하지 않습니다.", pinSetOk: "PIN이 설정되었습니다 ✓", pinForgotPrompt: "이렇게 하면 PIN이 비활성화됩니다(업무/재무 데이터에는 영향 없음). 확인하려면 RESET을 입력하세요:", navDashboard: "대시보드", navAgenda: "일정", navFinances: "재무", navReports: "보고서", navSettings: "설정", clockIn: "출근", clockOut: "퇴근", daysWorked: "근무 일수", totalEarned: "총 수입", overtimeHrs: "초과 근무 시간", absences: "결근", monthlyGoals: "월간 목표", edit: "편집", savingsGoal: "저축 목표", overtimeLimit: "초과 근무 한도", clockInLbl: "출근", clockOutLbl: "퇴근", overtimeLbl: "초과 근무", statusLbl: "상태", shift2Lbl: "교대 2 (선택)", auto: "자동", manual: "수동", hourlyRateLbl: "시급", clockIn2Lbl: "출근 2", clockOut2Lbl: "퇴근 2", overtime2Lbl: "초과 근무 2", valueLbl: "금액 (¥)", hoursLbl: "시간", pensionLbl: "연금", totalPension: "연금 총액", dayTotal: "일일 합계", clear: "지우기", save: "저장", profIdentity: "전문가 정보", userNameLbl: "사용자 이름", companyNameLbl: "회사 이름", companyPhoneLbl: "회사 전화번호", avatarLbl: "프로필 사진", sysParams: "시스템 매개변수", hourlyWageCfg: "시급 (¥)", otMultCfg: "초과 근무 승수 (%)", dailyHrsCfg: "표준 일일 시간", lunchBreakCfg: "점심 시간 (분)", appearance: "모양 및 언어", languageLbl: "언어", currencyLbl: "통화", themeColorLbl: "테마 색상", saveSettings: "설정 저장",
             agAllDay: "종일", agCatFinance: "💰 재정", agCatHealth: "💊 건강", agCatOther: "📌 기타", agCatPersonal: "🏠 개인", agCatWork: "💼 업무", agFieldCategory: "카테고리", agFieldDate: "날짜", agFieldEnd: "종료", agFieldLocation: "장소", agFieldLocationPh: "예: 병원, 사무실, Zoom 링크", agFieldNotes: "메모", agFieldNotesPh: "세부사항, 안건, 준비물 등...", agFieldReminder: "알림", agFieldRepeat: "반복", agFieldStart: "시작", agFieldTitle: "제목", agFieldTitlePh: "예: 치과 예약", agFieldUntil: "반복 종료일", agNewAppt: "새 일정", agNoEvents: "이 날짜에는 일정이 없습니다.", agNoteBodyPh: "메모를 작성하세요...", agNoteTitlePh: "메모 제목", agNotes: "메모", agRemNone: "없음", agRemindersOff: "알림 꺼짐", agRemindersOn: "알림 켜짐", agNoticeTitle: "알림 관련 안내", agNoticeBody: "일정 알림은 Kairo가 열려 있을 때만 알려줍니다 — 휴대폰 잠금 화면에는 표시되지 않습니다.", agNoticeDismiss: "확인했습니다", agNoticeReenableLink: "닫은 알림 다시 표시", agNoticeReenablePrompt: "알림을 다시 활성화하려면 코드를 입력하세요:", agNoticeReenabled: "알림이 다시 활성화되었습니다 ✓", agNoticeWrongCode: "코드가 올바르지 않습니다.", agRepDaily: "매일", agRepMonthly: "매월", agRepNone: "반복 안 함", agRepWeekly: "매주", agToday: "오늘", agUpcoming: "다가오는 일정 (14일 이내)", agendaSubtitle: "일정, 알림 및 메모", agendaTitle: "일정", cancel: "취소", delete: "삭제", finAddFunds: "추가", finAddFundsPrompt: "얼마를 추가하시겠습니까? (¥)", finBalance: "잔액", finBillAmount: "금액 (¥)", finBillDay: "매월 결제일", finBillTitle: "청구서 이름", finBillTitlePh: "예: 월세, 인터넷, 넷플릭스", finBills: "정기 청구서", finBudgets: "예산", finCatAlimentacao: "식비", finCatAssinaturas: "구독", finCatFreelance: "프리랜서", finCatInvestimento: "투자", finCatLazer: "여가", finCatMoradia: "주거비", finCatOutro: "기타", finCatOutros: "기타", finCatSalario: "급여", finCatSaude: "건강", finCatTransporte: "교통비", finChartBar: "수입 vs 지출 (6개월)", finChartLine: "누적 잔액", finChartPie: "카테고리별 지출", finExpense: "지출", finExport: "CSV 내보내기", finFieldAmount: "금액 (¥)", finFieldCategory: "카테고리", finFieldDate: "날짜", finFieldDesc: "설명", finFieldDescPh: "예: 마트 장보기", finFieldPayment: "결제 수단", finFieldReminder: "알림", finFilterAll: "전체", finFilterAllCats: "모든 카테고리", finGoalCurrent: "현재 저축액 (¥)", finGoalDeadline: "목표일 (선택)", finGoalNamePh: "예: 오사카 여행", finGoalTarget: "목표 금액 (¥)", finGoals: "저축 목표", finIncome: "수입", finInstallment: "할부 구매입니다", finInstallmentTotal: "총 할부 횟수", finInstallmentTotalHint: "총액,", finNewBill: "새 청구서", finNewTx: "새 거래", finNoBills: "아직 정기 청구서가 없습니다.", finNoExpenses: "이번 달 지출이 없습니다.", finNoGoals: "아직 저축 목표가 없습니다.", finNoTx: "거래 내역이 없습니다.", finPayCard: "💳 카드", finPayCash: "💵 현금", finPayPix: "📱 Pix", finSavingsRate: "저축률", finSearchPh: "검색...", finStatement: "거래 내역", finSubtitle: "수입, 지출, 예산 및 목표", finTitle: "재정", repAbsent2: "결근", repBreakdown: "월별 요약", repColMonth: "월", repDayOff2: "휴무", repDownload: "요약 다운로드", repHeatmap: "출근 히트맵", repHoursWorked: "근무 시간", repInsightEmpty: "아직 데이터가 충분하지 않습니다 — 계속 기록하면 여기에 인사이트가 표시됩니다.", repInsightExpenseDown: "지난 기간 대비 지출이 {n}% 감소했습니다.", repInsightExpenseUp: "지난 기간 대비 지출이 {n}% 증가했습니다.", repInsightFewerDays: "지난 기간보다 {n}일 적게 근무했습니다.", repInsightIncomeDown: "지난 기간 대비 수입이 {n}% 감소했습니다.", repInsightIncomeUp: "지난 기간 대비 수입이 {n}% 증가했습니다.", repInsightMoreDays: "지난 기간보다 {n}일 더 근무했습니다.", repInsightOvertime: "이번 기간 {n}시간의 초과 근무를 기록했습니다.", repInsightSavingsRate: "이번 기간의 저축률은 {n}%였습니다.", repInsightTopCat: "가장 큰 지출 카테고리는 {cat}(지출의 {pct}%)였습니다.", repInsights: "인사이트", repNoRecord: "기록 없음", repPrint: "인쇄", repSubtitle: "트렌드, 비교 및 인사이트", repTitle: "리포트", repTrend: "근무 시간 및 초과 근무 추이 (12개월)", repVsPrevious: "이전 기간 대비",
             statusAuto: "— 자동", statusWork: "✅ 근무함", statusAbsent: "❌ 결근", statusDayOff: "🌴 휴무", statusHoliday: "🎉 공휴일", statusHalfDay: "🌗 반차", statusSickNote: "📋 병가", statusBadgeWork: "✅ 근무함", statusBadgeAbsent: "❌ 결근", statusBadgeDayOff: "🌴 휴무", statusBadgeHoliday: "🎉 공휴일", statusBadgeHalfDay: "🌗 반차", statusBadgeSickNote: "📋 병가", statusBadgeNone: "➖ 기록 없음",
             nkTypeNone: "없음", nkTypeRetirement: "퇴직연금", nkTypeDisability: "장애연금", nkTypeSurvivors: "유족연금", nkTypeOthers: "기타", nkPlaceholderMonth: "월", nkPlaceholderDay: "일", nkPlaceholderValue: "금액", nkManualPh: "¥ 정확한 금액", repWorked: "근무함",
@@ -1645,7 +1703,7 @@ Um arquivo <code>kairo_backup_antes_migracao.json</code> será baixado automatic
             migLogFinance: "💸 재무: {n}건의 지출을 Kairo로 가져왔습니다."
         },
         ar: {
-            appSubtitle: "وقتك. عملك.", navDashboard: "لوحة القيادة", navAgenda: "جدول الأعمال", navFinances: "المالية", navReports: "التقارير", navSettings: "الإعدادات", clockIn: "تسجيل الدخول", clockOut: "تسجيل الخروج", daysWorked: "أيام العمل", totalEarned: "إجمالي الأرباح", overtimeHrs: "ساعات العمل الإضافي", absences: "الغياب", monthlyGoals: "الأهداف الشهرية", edit: "تعديل", savingsGoal: "هدف المدخرات", overtimeLimit: "حد العمل الإضافي", clockInLbl: "الدخول", clockOutLbl: "الخروج", overtimeLbl: "عمل إضافي", statusLbl: "الحالة", shift2Lbl: "الوردية 2 (اختياري)", auto: "تلقائي", manual: "يدوي", hourlyRateLbl: "الأجر بالساعة", clockIn2Lbl: "الدخول 2", clockOut2Lbl: "الخروج 2", overtime2Lbl: "إضافي 2", valueLbl: "القيمة (¥)", hoursLbl: "ساعات", pensionLbl: "المعاش التقاعدي", totalPension: "إجمالي المعاش", dayTotal: "المجموع اليومي", clear: "مسح", save: "حفظ", profIdentity: "الهوية المهنية", userNameLbl: "اسم المستخدم", companyNameLbl: "اسم الشركة", companyPhoneLbl: "هاتف الشركة", avatarLbl: "صورة الملف الشخصي", sysParams: "معلمات النظام", hourlyWageCfg: "الأجر بالساعة (¥)", otMultCfg: "مضاعف العمل الإضافي (%)", dailyHrsCfg: "ساعات العمل القياسية", lunchBreakCfg: "استراحة الغداء (دقيقة)", appearance: "المظهر واللغة", languageLbl: "اللغة", currencyLbl: "العملة", themeColorLbl: "لون السمة", saveSettings: "حفظ الإعدادات",
+            appSubtitle: "وقتك. عملك.", pinCardTitle: "قفل التطبيق (رمز PIN)", pinCardSubtitle: "يطلب رمز PIN مكون من 4 أرقام في كل مرة يُفتح فيها Kairo. هذا ليس أمانًا قويًا (تبقى كل البيانات على هذا الجهاز) — إنه مجرد رادع سريع ضد فتح شخص ما للتطبيق إذا التقط هاتفك.", pinEnableLbl: "طلب رمز PIN لفتح Kairo", pinSetupTitle: "عيّن رمز PIN الخاص بك", pinNewPh: "رمز PIN جديد", pinConfirmPh: "تأكيد", pinSetBtn: "تعيين الرمز", pinLockTitle: "أدخل رمز PIN الخاص بك", pinForgotLink: "نسيت الرمز؟", pinErrDigits: "يجب أن يتكون الرمز من 4 أرقام بالضبط.", pinErrMismatch: "الرمزان غير متطابقين.", pinSetOk: "تم تعيين الرمز ✓", pinForgotPrompt: "سيؤدي هذا إلى تعطيل الرمز (بياناتك المالية والعملية لن تتأثر). اكتب RESET للتأكيد:", navDashboard: "لوحة القيادة", navAgenda: "جدول الأعمال", navFinances: "المالية", navReports: "التقارير", navSettings: "الإعدادات", clockIn: "تسجيل الدخول", clockOut: "تسجيل الخروج", daysWorked: "أيام العمل", totalEarned: "إجمالي الأرباح", overtimeHrs: "ساعات العمل الإضافي", absences: "الغياب", monthlyGoals: "الأهداف الشهرية", edit: "تعديل", savingsGoal: "هدف المدخرات", overtimeLimit: "حد العمل الإضافي", clockInLbl: "الدخول", clockOutLbl: "الخروج", overtimeLbl: "عمل إضافي", statusLbl: "الحالة", shift2Lbl: "الوردية 2 (اختياري)", auto: "تلقائي", manual: "يدوي", hourlyRateLbl: "الأجر بالساعة", clockIn2Lbl: "الدخول 2", clockOut2Lbl: "الخروج 2", overtime2Lbl: "إضافي 2", valueLbl: "القيمة (¥)", hoursLbl: "ساعات", pensionLbl: "المعاش التقاعدي", totalPension: "إجمالي المعاش", dayTotal: "المجموع اليومي", clear: "مسح", save: "حفظ", profIdentity: "الهوية المهنية", userNameLbl: "اسم المستخدم", companyNameLbl: "اسم الشركة", companyPhoneLbl: "هاتف الشركة", avatarLbl: "صورة الملف الشخصي", sysParams: "معلمات النظام", hourlyWageCfg: "الأجر بالساعة (¥)", otMultCfg: "مضاعف العمل الإضافي (%)", dailyHrsCfg: "ساعات العمل القياسية", lunchBreakCfg: "استراحة الغداء (دقيقة)", appearance: "المظهر واللغة", languageLbl: "اللغة", currencyLbl: "العملة", themeColorLbl: "لون السمة", saveSettings: "حفظ الإعدادات",
             agAllDay: "طوال اليوم", agCatFinance: "💰 المالية", agCatHealth: "💊 الصحة", agCatOther: "📌 أخرى", agCatPersonal: "🏠 شخصي", agCatWork: "💼 عمل", agFieldCategory: "الفئة", agFieldDate: "التاريخ", agFieldEnd: "النهاية", agFieldLocation: "الموقع", agFieldLocationPh: "مثال: عيادة، مكتب، رابط Zoom", agFieldNotes: "ملاحظات", agFieldNotesPh: "التفاصيل، جدول الأعمال، ما يجب إحضاره...", agFieldReminder: "تذكير", agFieldRepeat: "التكرار", agFieldStart: "البداية", agFieldTitle: "العنوان", agFieldTitlePh: "مثال: موعد طبيب الأسنان", agFieldUntil: "التكرار حتى", agNewAppt: "موعد جديد", agNoEvents: "لا توجد مواعيد لهذا اليوم.", agNoteBodyPh: "اكتب ملاحظتك...", agNoteTitlePh: "عنوان الملاحظة", agNotes: "ملاحظات", agRemNone: "بدون", agRemindersOff: "التذكيرات متوقفة", agRemindersOn: "التذكيرات مفعّلة", agNoticeTitle: "تنبيه بخصوص التذكيرات", agNoticeBody: "تُشعرك تذكيرات الأجندة فقط أثناء فتح Kairo — لا تظهر على شاشة قفل هاتفك.", agNoticeDismiss: "فهمت", agNoticeReenableLink: "إظهار التنبيهات المُتجاهلة مجددًا", agNoticeReenablePrompt: "أدخل الرمز لإعادة تفعيل التنبيهات:", agNoticeReenabled: "تمت إعادة تفعيل التنبيهات ✓", agNoticeWrongCode: "رمز غير صحيح.", agRepDaily: "يوميًا", agRepMonthly: "شهريًا", agRepNone: "لا يتكرر", agRepWeekly: "أسبوعيًا", agToday: "اليوم", agUpcoming: "القادمة (خلال 14 يومًا)", agendaSubtitle: "المواعيد والتذكيرات والملاحظات", agendaTitle: "الأجندة", cancel: "إلغاء", delete: "حذف", finAddFunds: "إضافة أموال", finAddFundsPrompt: "ما المبلغ الذي تريد إضافته؟ (¥)", finBalance: "الرصيد", finBillAmount: "المبلغ (¥)", finBillDay: "يوم الشهر", finBillTitle: "اسم الفاتورة", finBillTitlePh: "مثال: الإيجار، الإنترنت، نتفليكس", finBills: "الفواتير الدورية", finBudgets: "الميزانيات", finCatAlimentacao: "الطعام", finCatAssinaturas: "الاشتراكات", finCatFreelance: "عمل حر", finCatInvestimento: "استثمار", finCatLazer: "ترفيه", finCatMoradia: "السكن", finCatOutro: "أخرى", finCatOutros: "أخرى", finCatSalario: "الراتب", finCatSaude: "الصحة", finCatTransporte: "المواصلات", finChartBar: "الدخل مقابل المصروفات (6 أشهر)", finChartLine: "الرصيد التراكمي", finChartPie: "الإنفاق حسب الفئة", finExpense: "مصروف", finExport: "تصدير CSV", finFieldAmount: "المبلغ (¥)", finFieldCategory: "الفئة", finFieldDate: "التاريخ", finFieldDesc: "الوصف", finFieldDescPh: "مثال: تسوق من السوق", finFieldPayment: "طريقة الدفع", finFieldReminder: "تذكير", finFilterAll: "الكل", finFilterAllCats: "جميع الفئات", finGoalCurrent: "المبلغ المدخر حتى الآن (¥)", finGoalDeadline: "الموعد النهائي (اختياري)", finGoalNamePh: "مثال: رحلة إلى أوساكا", finGoalTarget: "المبلغ المستهدف (¥)", finGoals: "أهداف الادخار", finIncome: "دخل", finInstallment: "هذه عملية شراء بالتقسيط", finInstallmentTotal: "عدد الأقساط", finInstallmentTotalHint: "بإجمالي عبر", finNewBill: "فاتورة جديدة", finNewTx: "معاملة جديدة", finNoBills: "لا توجد فواتير دورية بعد.", finNoExpenses: "لا توجد مصروفات هذا الشهر.", finNoGoals: "لا توجد أهداف ادخار بعد.", finNoTx: "لم يتم العثور على معاملات.", finPayCard: "💳 بطاقة", finPayCash: "💵 نقدًا", finPayPix: "📱 Pix", finSavingsRate: "معدل الادخار", finSearchPh: "بحث...", finStatement: "كشف الحساب", finSubtitle: "الدخل والمصروفات والميزانيات والأهداف", finTitle: "المالية", repAbsent2: "غياب", repBreakdown: "التفصيل الشهري", repColMonth: "الشهر", repDayOff2: "يوم إجازة", repDownload: "تنزيل الملخص", repHeatmap: "خريطة الحضور الحرارية", repHoursWorked: "ساعات العمل", repInsightEmpty: "لا توجد بيانات كافية بعد — استمر في التسجيل لرؤية الرؤى هنا.", repInsightExpenseDown: "انخفض الإنفاق بنسبة {n}% مقارنة بالفترة السابقة.", repInsightExpenseUp: "ارتفع الإنفاق بنسبة {n}% مقارنة بالفترة السابقة.", repInsightFewerDays: "عملت {n} يومًا أقل مقارنة بالفترة السابقة.", repInsightIncomeDown: "انخفض الدخل بنسبة {n}% مقارنة بالفترة السابقة.", repInsightIncomeUp: "ارتفع الدخل بنسبة {n}% مقارنة بالفترة السابقة.", repInsightMoreDays: "عملت {n} يومًا أكثر مقارنة بالفترة السابقة.", repInsightOvertime: "سجّلت {n} ساعة من العمل الإضافي خلال هذه الفترة.", repInsightSavingsRate: "كان معدل ادخارك خلال هذه الفترة {n}%.", repInsightTopCat: "كانت أكبر فئة إنفاق لديك هي {cat} (بنسبة {pct}% من الإنفاق).", repInsights: "رؤى", repNoRecord: "لا يوجد سجل", repPrint: "طباعة", repSubtitle: "الاتجاهات والمقارنات والرؤى", repTitle: "التقارير", repTrend: "اتجاه ساعات العمل والعمل الإضافي (12 شهرًا)", repVsPrevious: "مقارنة بالفترة السابقة",
             statusAuto: "— تلقائي", statusWork: "✅ عمل", statusAbsent: "❌ غياب", statusDayOff: "🌴 إجازة", statusHoliday: "🎉 عطلة رسمية", statusHalfDay: "🌗 نصف يوم", statusSickNote: "📋 إجازة مرضية", statusBadgeWork: "✅ عمل", statusBadgeAbsent: "❌ غياب", statusBadgeDayOff: "🌴 إجازة", statusBadgeHoliday: "🎉 عطلة رسمية", statusBadgeHalfDay: "🌗 نصف يوم", statusBadgeSickNote: "📋 إجازة مرضية", statusBadgeNone: "➖ لا يوجد سجل",
             nkTypeNone: "لا", nkTypeRetirement: "معاش التقاعد", nkTypeDisability: "معاش العجز", nkTypeSurvivors: "معاش الورثة", nkTypeOthers: "أخرى", nkPlaceholderMonth: "الشهر", nkPlaceholderDay: "اليوم", nkPlaceholderValue: "القيمة", nkManualPh: "¥ المبلغ الدقيق", repWorked: "عمل",
@@ -2213,6 +2271,133 @@ Um arquivo <code>kairo_backup_antes_migracao.json</code> será baixado automatic
       document.getElementById('cfg-language').value = store.settings.lang || 'en';
       document.getElementById('cfg-currency').value = store.settings.currency || 'JPY';
       renderAvatarPicker();
+      populatePinForm();
+    }
+
+    /* ------------------------------ App Lock (PIN) ------------------------------- */
+    async function hashPin(pin) {
+      const raw = 'kairo_pin_' + pin;
+      try {
+        const data = new TextEncoder().encode(raw);
+        const buf = await crypto.subtle.digest('SHA-256', data);
+        return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+      } catch (e) {
+        // crypto.subtle needs a secure context (https/localhost); fall back to
+        // a simple non-cryptographic hash so the feature still works when
+        // opened over file:// or an insecure origin.
+        let h = 0;
+        for (let i = 0; i < raw.length; i++) { h = ((h << 5) - h + raw.charCodeAt(i)) | 0; }
+        return 'fallback_' + h;
+      }
+    }
+
+    function populatePinForm() {
+      const toggle = document.getElementById('pin-enable-toggle');
+      const setupWrap = document.getElementById('pin-setup-wrap');
+      toggle.checked = !!store.settings.pinEnabled;
+      setupWrap.classList.toggle('hidden', !toggle.checked);
+      setupWrap.classList.toggle('flex', toggle.checked);
+      document.getElementById('pin-new').value = '';
+      document.getElementById('pin-confirm').value = '';
+      document.getElementById('pin-setup-error').classList.add('hidden');
+    }
+
+    document.getElementById('pin-enable-toggle').addEventListener('change', (e) => {
+      const setupWrap = document.getElementById('pin-setup-wrap');
+      if (e.target.checked) {
+        setupWrap.classList.remove('hidden');
+        setupWrap.classList.add('flex');
+      } else {
+        // Turning off from an already-unlocked settings screen is a trusted
+        // action — no need to re-enter the PIN to disable it.
+        store.settings.pinEnabled = false;
+        store.settings.pinHash = '';
+        saveStore();
+        setupWrap.classList.add('hidden');
+        setupWrap.classList.remove('flex');
+      }
+    });
+
+    document.getElementById('pin-set-btn').addEventListener('click', async () => {
+      const a = document.getElementById('pin-new').value.trim();
+      const b = document.getElementById('pin-confirm').value.trim();
+      const errEl = document.getElementById('pin-setup-error');
+      if (!/^\d{4}$/.test(a)) {
+        errEl.textContent = t('pinErrDigits', 'PIN must be exactly 4 digits.');
+        errEl.classList.remove('hidden');
+        return;
+      }
+      if (a !== b) {
+        errEl.textContent = t('pinErrMismatch', "PINs don't match.");
+        errEl.classList.remove('hidden');
+        return;
+      }
+      store.settings.pinHash = await hashPin(a);
+      store.settings.pinEnabled = true;
+      saveStore();
+      errEl.classList.add('hidden');
+      document.getElementById('pin-new').value = '';
+      document.getElementById('pin-confirm').value = '';
+      toast(t('pinSetOk', 'PIN set ✓'));
+    });
+
+    let pinEntered = '';
+    function updatePinDots() {
+      document.querySelectorAll('#pin-dots [data-dot]').forEach((dot, i) => {
+        dot.style.background = i < pinEntered.length ? 'var(--primary)' : 'transparent';
+        dot.style.borderColor = i < pinEntered.length ? 'var(--primary)' : '';
+      });
+    }
+    function shakePinDots() {
+      const wrap = document.getElementById('pin-dots');
+      wrap.style.animation = 'none';
+      void wrap.offsetWidth;
+      wrap.style.animation = 'pinShake 0.4s ease';
+    }
+    async function tryUnlockPin() {
+      const hash = await hashPin(pinEntered);
+      if (hash === store.settings.pinHash) {
+        document.getElementById('pin-lock-screen').classList.add('hidden');
+        document.getElementById('pin-lock-screen').classList.remove('flex');
+        pinEntered = '';
+      } else {
+        shakePinDots();
+        setTimeout(() => { pinEntered = ''; updatePinDots(); }, 300);
+      }
+    }
+    document.querySelectorAll('.pin-key').forEach(btn => {
+      btn.addEventListener('click', () => {
+        if (pinEntered.length >= 4) return;
+        pinEntered += btn.dataset.key;
+        updatePinDots();
+        if (pinEntered.length === 4) tryUnlockPin();
+      });
+    });
+    document.getElementById('pin-backspace').addEventListener('click', () => {
+      pinEntered = pinEntered.slice(0, -1);
+      updatePinDots();
+    });
+    document.getElementById('pin-forgot-link').addEventListener('click', () => {
+      const input = prompt(t('pinForgotPrompt', 'This disables the PIN (your work/finance data is untouched). Type RESET to confirm:'));
+      if (input === null) return;
+      if (input.trim().toUpperCase() === 'RESET') {
+        store.settings.pinEnabled = false;
+        store.settings.pinHash = '';
+        saveStore();
+        pinEntered = '';
+        document.getElementById('pin-lock-screen').classList.add('hidden');
+        document.getElementById('pin-lock-screen').classList.remove('flex');
+      }
+    });
+
+    function checkPinLock() {
+      if (store.settings.pinEnabled && store.settings.pinHash) {
+        const logo = document.querySelector('img[alt="Kairo Logo"][src]');
+        if (logo) document.getElementById('pin-lock-logo').src = logo.src;
+        const screen = document.getElementById('pin-lock-screen');
+        screen.classList.remove('hidden');
+        screen.classList.add('flex');
+      }
     }
 
     document.getElementById('cfg-ot-mult').addEventListener('change', () => {
@@ -4272,6 +4457,7 @@ Um arquivo <code>kairo_backup_antes_migracao.json</code> será baixado automatic
       });
 
       /* ------------------------------ App boot ------------------------------ */
+      checkPinLock();
       applySettings();
       populateSettingsForm();
       renderCalendar();
