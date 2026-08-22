@@ -1069,10 +1069,10 @@ Um arquivo <code>kairo_backup_antes_migracao.json</code> será baixado automatic
             <label class="text-xs text-on-surface-variant" data-i18n="agFieldNotes">Notes</label>
             <textarea class="bg-surface-container rounded-lg border border-outline-variant/30 text-on-surface p-2 text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none resize-none" data-i18n-ph="agFieldNotesPh" id="ag-notes" placeholder="Details, agenda, things to bring..." rows="2"></textarea>
           </div>
-          <button class="py-2.5 rounded-lg border border-amber-500/30 text-amber-400 font-semibold text-sm transition-colors flex items-center justify-center gap-2" id="ag-ics-btn" style="background: rgba(251, 191, 36, 0.06);" type="button">
+          <a class="py-2.5 rounded-lg border border-amber-500/30 text-amber-400 font-semibold text-sm transition-colors flex items-center justify-center gap-2 no-underline" href="#" id="ag-ics-btn" style="background: rgba(251, 191, 36, 0.06);" target="_blank">
             <span class="material-symbols-outlined text-lg">calendar_add_on</span>
             <span data-i18n="agIcsBtn">Add to phone's Calendar (real lock-screen alert)</span>
-          </button>
+          </a>
           <div class="grid grid-cols-3 gap-2 mt-1">
             <button class="py-2 rounded-lg bg-surface-container hover:bg-white/10 text-on-surface-variant font-semibold transition-colors" data-i18n="cancel" id="ag-cancel-btn" type="button">Cancel</button>
             <button class="py-2 rounded-lg bg-error/10 hover:bg-error/20 text-error font-semibold transition-colors hidden" data-i18n="delete" id="ag-delete-btn" type="button">Delete</button>
@@ -3237,7 +3237,8 @@ Um arquivo <code>kairo_backup_antes_migracao.json</code> será baixado automatic
         return lines.join('\r\n');
       }
 
-      document.getElementById('ag-ics-btn').addEventListener('click', async () => {
+      document.getElementById('ag-ics-btn').addEventListener('click', async (clickEv) => {
+        clickEv.preventDefault();
         const title = document.getElementById('ag-title').value.trim();
         const date = document.getElementById('ag-date').value;
         if (!title || !date) { toast(t('agIcsNeedTitleDate', 'Preencha título e data primeiro.'), true); return; }
@@ -3263,13 +3264,14 @@ Um arquivo <code>kairo_backup_antes_migracao.json</code> será baixado automatic
             await navigator.share({ files: [file], title: ev.title });
             return;
           }
-        } catch (e) { /* user cancelled share, or unsupported — fall back to direct download below */ }
+        } catch (e) { /* user cancelled share, or unsupported — fall back below */ }
 
+        // Fallback: navigate a real link straight to the file (no forced download)
+        // so Safari on iOS can show its native "Add All" calendar preview instead
+        // of just saving to Files.
         const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url; a.download = fileName;
-        document.body.appendChild(a); a.click(); document.body.removeChild(a);
-        URL.revokeObjectURL(url);
+        window.open(url, '_blank');
+        setTimeout(() => URL.revokeObjectURL(url), 30000);
         toast(t('agIcsExported', 'Arquivo do calendário gerado — abra-o para adicionar ao seu Calendário.'));
       });
 
