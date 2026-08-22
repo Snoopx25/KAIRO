@@ -3,7 +3,7 @@
 <html class="dark" data-theme="purple" lang="en-US" style=""><head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport"/>
-<title>Kairo — Your Time. Your Rhythm.</title>
+<title>Kairo — Your Time. Your Work.</title>
 <!-- PWA -->
 <link href="./manifest.json" rel="manifest"/>
 <meta content="#7c3aed" name="theme-color"/>
@@ -4795,8 +4795,19 @@ Um arquivo <code>kairo_backup_antes_migracao.json</code> será baixado automatic
         }
 
         // Wait for the view-switch crossfade (~130ms) and the drawer's own
-        // slide transition (~250ms) to fully settle before measuring positions.
-        setTimeout(() => positionTourStep(step), isMobileNow ? 320 : 160);
+        // slide transition (~250ms) to fully settle, THEN scroll the target
+        // into the middle of the screen before measuring its position — so the
+        // highlighted item is always actually visible, not scrolled off-screen.
+        const viewSwitchDelay = isMobileNow ? 320 : 160;
+        setTimeout(() => {
+          const target = step.selector ? document.querySelector(step.selector) : null;
+          if (target) {
+            target.scrollIntoView({ behavior: 'auto', block: 'center', inline: 'nearest' });
+            setTimeout(() => positionTourStep(step), 70);
+          } else {
+            positionTourStep(step);
+          }
+        }, viewSwitchDelay);
       }
 
       function startTour() {
