@@ -3,7 +3,7 @@
 <html class="dark" data-theme="purple" lang="en-US" style=""><head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport"/>
-<title>Kairo — Your Time. Your Work.</title>
+<title>Kairo — Your Time. Your Rhythm.</title>
 <!-- PWA -->
 <link href="./manifest.json" rel="manifest"/>
 <meta content="#7c3aed" name="theme-color"/>
@@ -4698,12 +4698,12 @@ Um arquivo <code>kairo_backup_antes_migracao.json</code> será baixado automatic
       /* ------------------------------ Onboarding Tour ------------------------------ */
       const TOUR_STEPS = [
         { view: 'dashboard', selector: null, titleKey: 'tourStep1Title', bodyKey: 'tourStep1Body', placement: 'center' },
-        { view: 'dashboard', selector: '#btn-clock-in', titleKey: 'tourStep2Title', bodyKey: 'tourStep2Body', placement: 'top' },
+        { view: 'dashboard', selector: '#btn-clock-in', titleKey: 'tourStep2Title', bodyKey: 'tourStep2Body', placement: 'top', openDrawer: true },
         { view: 'dashboard', selector: '#kpis', titleKey: 'tourStep3Title', bodyKey: 'tourStep3Body', placement: 'bottom' },
         { view: 'dashboard', selector: '#cal-grid', titleKey: 'tourStep4Title', bodyKey: 'tourStep4Body', placement: 'top' },
         { view: 'agenda', selector: '#ag-new-btn', titleKey: 'tourStep5Title', bodyKey: 'tourStep5Body', placement: 'bottom' },
-        { view: 'finances', selector: '#nav-finances', titleKey: 'tourStep6Title', bodyKey: 'tourStep6Body', placement: 'right' },
-        { view: 'reports', selector: '#nav-reports', titleKey: 'tourStep7Title', bodyKey: 'tourStep7Body', placement: 'right' },
+        { view: 'finances', selector: '#fin-new-btn', titleKey: 'tourStep6Title', bodyKey: 'tourStep6Body', placement: 'bottom' },
+        { view: 'reports', selector: '#rep-print-btn', titleKey: 'tourStep7Title', bodyKey: 'tourStep7Body', placement: 'bottom' },
         { view: 'settings', selector: '#settings-tab-select', titleKey: 'tourStep8Title', bodyKey: 'tourStep8Body', placement: 'bottom' },
         { view: 'settings', selector: null, titleKey: 'tourStep9Title', bodyKey: 'tourStep9Body', placement: 'center' }
       ];
@@ -4778,6 +4778,7 @@ Um arquivo <code>kairo_backup_antes_migracao.json</code> será baixado automatic
         if (index < 0 || index >= TOUR_STEPS.length) { endTour(true); return; }
         tourIndex = index;
         const step = TOUR_STEPS[index];
+        const isMobileNow = window.innerWidth < 768;
         tourGoToView(step.view);
 
         document.getElementById('tour-progress').textContent = (index + 1) + '/' + TOUR_STEPS.length;
@@ -4786,8 +4787,16 @@ Um arquivo <code>kairo_backup_antes_migracao.json</code> será baixado automatic
         document.getElementById('tour-back-btn').classList.toggle('hidden', index === 0);
         document.getElementById('tour-next-btn').textContent = (index === TOUR_STEPS.length - 1) ? t('tourFinish', 'Finish') : t('tourNext', 'Next');
 
-        // Wait a beat for the view-switch transition/render to settle before measuring positions
-        setTimeout(() => positionTourStep(step), 160);
+        // A step that targets something inside the sidebar (e.g. Clock In) needs
+        // the mobile drawer opened for its duration; every other step needs it
+        // closed so it doesn't sit on top of the page content.
+        if (isMobileNow) {
+          if (step.openDrawer) openSideNav(); else closeSideNav();
+        }
+
+        // Wait for the view-switch crossfade (~130ms) and the drawer's own
+        // slide transition (~250ms) to fully settle before measuring positions.
+        setTimeout(() => positionTourStep(step), isMobileNow ? 320 : 160);
       }
 
       function startTour() {
