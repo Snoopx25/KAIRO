@@ -3349,7 +3349,7 @@ Um arquivo <code>kairo_backup_antes_migracao.json</code> será baixado automatic
         return lines.join('\r\n');
       }
 
-      document.getElementById('ag-ics-btn').addEventListener('click', async (clickEv) => {
+      document.getElementById('ag-ics-btn').addEventListener('click', (clickEv) => {
         clickEv.preventDefault();
         const title = document.getElementById('ag-title').value.trim();
         const date = document.getElementById('ag-date').value;
@@ -3367,20 +3367,13 @@ Um arquivo <code>kairo_backup_antes_migracao.json</code> será baixado automatic
         };
 
         const ics = buildIcsForEvent(ev);
-        const fileName = 'kairo_' + title.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '_').slice(0, 40) + '.ics';
         const blob = new Blob([ics], { type: 'text/calendar' });
 
-        try {
-          const file = new File([blob], fileName, { type: 'text/calendar' });
-          if (navigator.canShare && navigator.canShare({ files: [file] })) {
-            await navigator.share({ files: [file], title: ev.title });
-            return;
-          }
-        } catch (e) { /* user cancelled share, or unsupported — fall back below */ }
-
-        // Fallback: navigate a real link straight to the file (no forced download)
-        // so Safari on iOS can show its native "Add All" calendar preview instead
-        // of just saving to Files.
+        // Navigate straight to the file (no share sheet, no forced download).
+        // iOS Safari recognizes text/calendar and shows its own native
+        // "New Event — Add All" preview card right on top of the page — this
+        // is the direct, one-tap path. The share sheet (Files/Mail/WhatsApp...)
+        // often buries "Calendar" under "More", which is what was happening before.
         const url = URL.createObjectURL(blob);
         window.open(url, '_blank');
         setTimeout(() => URL.revokeObjectURL(url), 30000);
