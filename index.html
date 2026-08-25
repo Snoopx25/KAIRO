@@ -3350,10 +3350,9 @@ Um arquivo <code>kairo_backup_antes_migracao.json</code> será baixado automatic
       }
 
       document.getElementById('ag-ics-btn').addEventListener('click', (clickEv) => {
-        clickEv.preventDefault();
         const title = document.getElementById('ag-title').value.trim();
         const date = document.getElementById('ag-date').value;
-        if (!title || !date) { toast(t('agIcsNeedTitleDate', 'Preencha título e data primeiro.'), true); return; }
+        if (!title || !date) { clickEv.preventDefault(); toast(t('agIcsNeedTitleDate', 'Preencha título e data primeiro.'), true); return; }
 
         const ev = {
           id: document.getElementById('ag-ev-id').value || agGenId('ev'),
@@ -3367,17 +3366,13 @@ Um arquivo <code>kairo_backup_antes_migracao.json</code> será baixado automatic
         };
 
         const ics = buildIcsForEvent(ev);
-        const blob = new Blob([ics], { type: 'text/calendar' });
-
-        // Navigate straight to the file (no share sheet, no forced download).
-        // iOS Safari recognizes text/calendar and shows its own native
-        // "New Event — Add All" preview card right on top of the page — this
-        // is the direct, one-tap path. The share sheet (Files/Mail/WhatsApp...)
-        // often buries "Calendar" under "More", which is what was happening before.
-        const url = URL.createObjectURL(blob);
-        window.open(url, '_blank');
-        setTimeout(() => URL.revokeObjectURL(url), 30000);
-        toast(t('agIcsExported', 'Arquivo do calendário gerado — abra-o para adicionar ao seu Calendário.'));
+        // A data: URI (self-contained, no temporary blob to expire or lose
+        // scope across tabs) embedded directly as the link's href. We do NOT
+        // preventDefault here — letting the browser follow a real link tap is
+        // exactly what makes Safari recognize the calendar file and show its
+        // native "Add Event" card, instead of a blank/broken tab.
+        const b64 = btoa(unescape(encodeURIComponent(ics)));
+        clickEv.currentTarget.href = 'data:text/calendar;charset=utf-8;base64,' + b64;
       });
 
       function deleteEvent(id) {
