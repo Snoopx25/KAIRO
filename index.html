@@ -2824,7 +2824,7 @@ Um arquivo <code>kairo_backup_antes_migracao.json</code> será baixado automatic
         if (brutMin < 0) brutMin += 1440;
         const dailyHrs = Number(store.settings.dailyHrs) || 8;
         const lunchBreak = Number(store.settings.lunchBreak) || 0;
-        const netMin = Math.max(0, brutMin - (brutMin >= 360 ? lunchBreak : 0));
+        const netMin = Math.max(0, brutMin - (brutMin > lunchBreak ? lunchBreak : 0));
         const cap = dailyHrs * 60;
         const xm1 = timeToMinutes(elX.value) || 0;
         return (netMin > cap && xm1 === 0) ? (netMin - cap) : 0;
@@ -2848,7 +2848,7 @@ Um arquivo <code>kairo_backup_antes_migracao.json</code> será baixado automatic
                  const mult1 = (Number(store.settings.otMult) || 100) / 100;
                  const dailyHrs = Number(store.settings.dailyHrs) || 8;
                  const lunchBreak = Number(store.settings.lunchBreak) || 0;
-                 const netMin = Math.max(0, brutMin - (brutMin >= 360 ? lunchBreak : 0));
+                 const netMin = Math.max(0, brutMin - (brutMin > lunchBreak ? lunchBreak : 0));
                  const normMin = Math.min(netMin, dailyHrs * 60);
                  const xm1 = timeToMinutes(elX.value) || 0;
                  if (wage1 > 0) total += (normMin / 60) * wage1 + (xm1 / 60) * wage1 * mult1;
